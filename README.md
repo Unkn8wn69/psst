@@ -20,6 +20,7 @@ This project is in experimental stage, and contributions from those with cryptog
 
 * [X] Convert monero polyseed seed to small hexstring
 * [X] Generate a set of secret shares (multiple groups, master threshold etc.)
+* [ ] Passphrase protection
 * [ ] Ability to generate secret shares from arbitrary data.
 * [ ] Codebase enhancements for simplicity and clarity.
 * [ ] Direct integration with Trezor's shamir-mnemonic for streamlined processes.
@@ -39,7 +40,7 @@ This project is in experimental stage, and contributions from those with cryptog
    For externally managed environment on Arch:
 
    `sudo pacman -S python-click`
-   
+
 2. Install python-shamir-mnemonic
 
    `git clone https://github.com/trezor/python-shamir-mnemonic`
