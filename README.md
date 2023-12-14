@@ -51,7 +51,7 @@ This project is in experimental stage, and contributions from those with cryptog
 ## Credits
 
 - Trezor [python-shamir-mnemonic](https://github.com/trezor/python-shamir-mnemonic)
-- [iancoleman](https://github.com/iancoleman/slip39) for inspiration from his
+- [iancoleman](https://github.com/iancoleman/slip39) for inspiration from his https://iancoleman.io/slip39/
 
 ## Donations
 
