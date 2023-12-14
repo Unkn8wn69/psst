@@ -36,7 +36,9 @@ def hex_to_seed(hex_string, wordlist):
 
 def is_valid_seed(seed):
     words = seed.split()
-    return all(word in polyseed_wordlist for word in words)
+    valid_words = all(word in polyseed_wordlist for word in words)
+    valid_length = len(words) == 16
+    return valid_words and valid_length
 
 def seed_input():
     global final_hex
@@ -70,19 +72,6 @@ def string_input():
     else:
         clear_screen()
         print("Your string isn't valid or too short")
-        string_input()
-
-def type_of_input():
-    clear_screen()
-    print("Choose type of input:")
-    print("1: Monero/BIP39 seed")
-    print("2: Arbitrary string")
-    choice = input("Enter 1 or 2: ")
-    if choice == "1":
-        clear_screen()
-        seed_input()
-    else:
-        clear_screen()
         string_input()
 
 def validate_shares_and_threshold(num_shares, threshold):
@@ -139,64 +128,103 @@ def delete_group(groups):
     else:
         print("Invalid group number.")
 
+def create_group():
+    global groups
+    global group_threshold
+    clear_screen() 
+    while True:
+        group_name = input("Enter the group name: ")
+        if len(group_name) < 0 or group_name in groups:
+            print("Invalid group name")
+        else:
+            break
+
+    while True:
+    
+        while True:
+            try:
+                num_shares = int(input("Enter the number of shares (2-16)\n"))
+                if 1 <= num_shares <= 16:
+                    break
+            except:
+                print("Invalid number of shares. You can only have 2-16 shares")
+                continue
+
+        while True:
+            try:
+                threshold = int(input(f"Enter the number of shares needed to recover (2-{num_shares})\n"))
+                if 2 <= threshold <= num_shares:
+                    break
+            except:
+                print("Invalid number of shares. You can only have (2-{num_shares}) shares")
+                continue            
+        
+        groups.append({
+            'name': group_name,
+            'num_shares': num_shares,
+            'threshold': threshold
+        })
+        break
+
+    clear_screen()
+
 def create_groups():
     global groups
     global group_threshold
     clear_screen()
-    groups = []
     use_multiple_groups = input("Do you want to use multiple groups? (yes/no): ").strip().lower()
 
-    if use_multiple_groups == 'yes' and group_threshold == 0:
+    if use_multiple_groups == 'yes':
         while True:
-            group_threshold = int(input("How many groups should be needed to complete?\n"))
-            if 1 <= group_threshold <= 16:
-                break
-            print("Group threshold must be between 1 and 16.")
+            try:
+                group_threshold = int(input("How many groups should be needed to complete? (1-16)\n"))
+                if 1 <= group_threshold <= 16:
+                    break
+            except:
+                print("Invalid number of groups. You can only have 2-16 groups")
+                continue
+                
+        create_group()
+        manage_groups()
+    else:
+        print("seconds")
 
-    while True:
-        group_name = "default" if not groups and use_multiple_groups != 'yes' else input("Enter the group name: ")
-        while True:
-            shares_prompt = "Enter the number of shares: "
-            threshold_prompt = "Enter the threshold: "
-            num_shares = int(input(shares_prompt))
-            threshold = int(input(threshold_prompt))
-
-            if validate_shares_and_threshold(num_shares, threshold):
-                groups.append({
-                    'name': group_name,
-                    'num_shares': num_shares,
-                    'threshold': threshold
-                })
-                break
-
-        clear_screen()
-        display_groups(groups)
-
-        if use_multiple_groups == 'yes':
-            another_group = input("Do you want to add another group? (yes/no): ").strip().lower()
-            if another_group != 'yes':
-                break
-
-        if use_multiple_groups == 'no':
-            break
-
-    manage_groups()
 
 def manage_groups():
     global groups
     while True:
-        action = input("Do you want to edit/delete any group, or are you done? (edit/delete/done): ").strip().lower()
-        if action == 'edit':
+        display_groups(groups)
+        
+        print("1 - Add")
+        print("2 - Edit")
+        print("3 - Delete")
+        print("4 - Done")
+
+        choice = input("Enter choice: ")
+
+        if choice == '1':
+            clear_screen()
+            create_group()
+        elif choice == '2':
             edit_group(groups)
             clear_screen()
             display_groups(groups)
-        elif action == 'delete':
+        elif choice == '3':
             delete_group(groups)
             clear_screen()
             display_groups(groups)
-        elif action == 'done':
-            output_type()
-            break
+        elif choice == '4':
+            if len(groups) >= 1:
+                if len(groups) <= group_threshold:
+                    output_type()
+                    break
+                else:
+                    print("The requested group threshold must not exceed the number of groups.")
+                    continue
+            else:
+                print("No group created yet")
+        else:
+            print("Invalid choice, please try again.")
         
 
 def output_type():
@@ -292,12 +320,13 @@ def print_groups_with_color_and_hex(groups):
 def main():
     print("Monero Seed Converter")
     print("Choose an operation:")
-    print("1: Create a set of shared secrets from a seed or string")
-    print("2: Recover seed or string from set of shared secrets")
+    print("1: Create a set of shared secrets from a polyseed")
+    print("2: Recover polyseed from set of shared secrets")
     choice = input("Enter 1 or 2: ")
 
     if choice == '1':
-        type_of_input()
+        clear_screen()
+        seed_input()
     elif choice == '2':
         recover()
     else:
@@ -309,8 +338,7 @@ def recover():
         print("Choose an operation:")
         print("1: Recover the secret hexstring from mnemonics")
         print("2: Recover the seed from the secret hexstring")
-        print("3: Recover the secret hexstring from hexstrings")
-        print("4: Exit")
+        print("3: Exit")
         choice = input("==> ")
 
         if choice == '1':
@@ -320,11 +348,9 @@ def recover():
             print("Recovered seed phrase:")
             print(hex_to_seed(hex_string, polyseed_wordlist))
         elif choice == '3':
-            print("Not implemented yet")
-        elif choice == '4':
             break
         else:
-            print("Invalid choice. Please enter 1,2,3 or 4.")
+            print("Invalid choice. Please enter 1,2 or 3.")
 
 if __name__ == "__main__":
     with open('wordlist.json', 'r') as file:
