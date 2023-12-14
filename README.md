@@ -38,9 +38,8 @@ This project is in experimental stage, and contributions from those with cryptog
 
    For externally managed environment on Arch:
 
-   ```
-   sudo pacman -S python-click
-   ```
+   `sudo pacman -S python-click`
+   
 2. Install python-shamir-mnemonic
 
    `git clone https://github.com/trezor/python-shamir-mnemonic`
