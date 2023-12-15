@@ -257,7 +257,7 @@ def manage_groups():
             display_groups(groups)
         elif choice == '4':
             if len(groups) >= 1:
-                if len(groups) <= group_threshold:
+                if len(groups) >= group_threshold:
                     output_type()
                 else:
                     print("The requested group threshold must not exceed the number of groups.")
