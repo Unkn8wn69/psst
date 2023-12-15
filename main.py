@@ -9,6 +9,8 @@ final_hex = ""
 groups = []
 group_threshold = 0
 polyseed_wordlist = []
+shares = 0
+threshold = 0
 
 def clear_screen():
     os.system('cls' if os.name == 'nt' else 'clear')
@@ -45,8 +47,8 @@ def seed_input():
     choice = input("Please enter your seed:\n")
     if is_valid_seed(choice):
         final_hex = seed_to_hex(choice, polyseed_wordlist)
-        print(final_hex)
-        create_groups()
+
+        multiple_groups()
     else:
         print("This seed is not valid")
         seed_input()
@@ -88,11 +90,9 @@ def display_groups(groups):
         print("No groups created yet.")
         return
 
-    # Table headers
     print(f"{'Group No.':<10} {'Name':<15} {'Shares':<10} {'Threshold':<10}")
     print('-' * 45)
 
-    # Table rows
     for i, group in enumerate(groups, start=1):
         print(f"{str(i):<10} {group['name']:<15} {group['num_shares']:<10} {group['threshold']:<10}")
 
@@ -168,8 +168,46 @@ def create_group():
 
     clear_screen()
 
-def create_groups():
-    global groups
+def create_single():
+    global shares
+    global threshold
+    clear_screen() 
+    while True:
+    
+        while True:
+            try:
+                shares = int(input("Enter the number of shares (2-16)\n"))
+                if 1 <= shares <= 16:
+                    break
+            except ValueError:
+                print("Invalid number of shares. You can only have 2-16 shares")
+                continue
+            except KeyboardInterrupt:
+                main()
+
+        while True:
+            try:
+                threshold = int(input(f"Enter the number of shares needed to recover (2-{shares})\n"))
+                if 2 <= threshold <= shares:
+                    break
+            except ValueError:
+                print("Invalid number of shares. You can only have (2-{shares}) shares")
+                continue
+            except KeyboardInterrupt:
+                main()
+        
+        groups.append({
+            'name': "default",
+            'num_shares': shares,
+            'threshold': threshold
+        })
+        break              
+
+    clear_screen()
+    output_type()
+
+
+def multiple_groups():
     global group_threshold
     clear_screen()
     use_multiple_groups = input("Do you want to use multiple groups? (yes/no): ").strip().lower()
@@ -180,18 +218,22 @@ def create_groups():
                 group_threshold = int(input("How many groups should be needed to complete? (1-16)\n"))
                 if 1 <= group_threshold <= 16:
                     break
-            except:
+            except ValueError:
                 print("Invalid number of groups. You can only have 2-16 groups")
                 continue
+            except KeyboardInterrupt:
+                main()
                 
         create_group()
         manage_groups()
     else:
-        print("seconds")
+        create_single()
 
 
 def manage_groups():
     global groups
+    global group_threshold
+
     while True:
         display_groups(groups)
         
@@ -217,9 +259,9 @@ def manage_groups():
             if len(groups) >= 1:
                 if len(groups) <= group_threshold:
                     output_type()
-                    break
                 else:
                     print("The requested group threshold must not exceed the number of groups.")
+                    time.sleep(5)
                     continue
             else:
                 print("No group created yet")
@@ -235,6 +277,7 @@ def output_type():
         print("1: Output secrets as mnemonic phrases")
         print("2: Output secrets in hexedecimal")
         print("3: Output secrets in both mnemonic phrases and hexedecimal")
+        print("4: Home")
         choice = input("==> ")
         if choice == "1":
             print_groups_with_color(share_data)
@@ -242,6 +285,8 @@ def output_type():
             print_groups_with_color_hex(share_data)
         elif choice == "3":
             print_groups_with_color_and_hex(share_data)
+        elif choice == "4":
+            main()
         else:
             clear_screen()
             print("Please choose a valid option.")
@@ -297,6 +342,7 @@ RESET = "\033[0m"
 colors = [YELLOW, BLUE, MAGENTA, CYAN]
 
 def print_groups_with_color(groups):
+    print("Original secret hex: " + MAGENTA + final_hex + RESET)
     for group in groups:
         color = random.choice(colors)
         print("\033[32m" + f"{group['name']} {RESET} - \033[1m {group['threshold']} of {group['total_shares']} {RESET} shares required:" + RESET)
@@ -318,6 +364,13 @@ def print_groups_with_color_and_hex(groups):
             print(color + share + "\n" + share.encode().hex() + "\n" + RESET)
 
 def main():
+    global groups
+    global group_threshold
+    global final_hex
+    final_hex = ""
+    groups = []
+    group_threshold = 0
+
     print("Monero Seed Converter")
     print("Choose an operation:")
     print("1: Create a set of shared secrets from a polyseed")
@@ -345,8 +398,8 @@ def recover():
             subprocess.run('cd python-shamir-mnemonic && python3 -m shamir_mnemonic.cli recover', shell=True)
         elif choice == '2':
             hex_string = input("Enter the hexadecimal string: ")
-            print("Recovered seed phrase:")
-            print(hex_to_seed(hex_string, polyseed_wordlist))
+            print("\nRecovered seed phrase:\n\033[32m" + hex_to_seed(hex_string, polyseed_wordlist) + RESET + "\n")
+            print()
         elif choice == '3':
             break
         else:
