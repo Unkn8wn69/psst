@@ -33,7 +33,14 @@ This project is in experimental stage, and contributions from those with cryptog
 
 ## Installation
 
-1. Install click module
+0. Clone this repo and move into the directory
+   
+   ```
+   git clone https://github.com/Unkn8wn69/psst
+   cd psst
+   ```
+
+1. Install click module (not needed for tails)
 
    `pip install click`
 
