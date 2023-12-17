@@ -216,7 +216,7 @@ def manage_groups():
         print("3 - Delete")
         print("4 - Done")
 
-        choice = input("Enter choice: ")
+        choice = input("==> ")
 
         if choice == '1':
             clear_screen()
@@ -341,7 +341,7 @@ def main():
     print("Choose an operation:")
     print("1: Create a set of shared secrets from a polyseed")
     print("2: Recover polyseed from set of shared secrets")
-    choice = input("Enter 1 or 2: ")
+    choice = input("==> ")
 
     if choice == '1':
         clear_screen()
