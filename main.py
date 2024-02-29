@@ -6,7 +6,7 @@ import re
 import random
 from funcs import *
 
-# Variable
+# Variabl
 
 final_hex = ""
 groups = []
