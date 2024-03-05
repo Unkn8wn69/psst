@@ -4,18 +4,7 @@ import webbrowser
 
 # Local Imports
 from about import create_about_page
-
-# Constants
-APP_TITLE = "PSST"
-APP_VERSION = "0.0.1"
-APP_GEOMETRY = "900x400"
-GITHUB_LOGO_PATH = "assets/github.png"
-GITHUB_URL = "https://github.com/"
-
-# Colors
-
-SEL_BUTTON_FG = "#F4A261"
-BUTTON_FG = "#5A5A66"
+from consts import *
 
 tabs = ["Create", "Recover", "About"]
 current_tab = "About"
@@ -29,11 +18,11 @@ def clear_main_content():
 def update_main_content(tab):
     clear_main_content()
     if tab == "About":
-        create_about_page(main_content_frame)
+        create_about_page(main_content_frame, switch_tab)
 
 # Top bar functions
 
-def on_tab_button_click(tab):
+def switch_tab(tab):
     global current_tab
     current_tab = tab
     print(f"Tab changed to: {tab}")
@@ -45,7 +34,7 @@ def open_github():
 
 def tab_buttons(top_bar):
     for tab in tabs:
-        button = ctk.CTkButton(top_bar, text=tab, command=lambda tab=tab: on_tab_button_click(tab))
+        button = ctk.CTkButton(top_bar, text=tab, command=lambda tab=tab: switch_tab(tab))
         button.pack(side="left", padx=5)
         button.tab_name = tab
         if tab == current_tab:
