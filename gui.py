@@ -64,11 +64,11 @@ def create_top_bar(parent):
     original_icon = tk.PhotoImage(file=GITHUB_LOGO_PATH)
     small_icon = original_icon.subsample(6, 6)
     icon_label = ctk.CTkLabel(top_bar, text="", image=small_icon, cursor="hand2")
-    icon_label.pack(side="right")
+    icon_label.pack(side="right", padx=10, pady=5)
     icon_label.bind("<Button-1>", lambda event: open_github())
 
     version_label = ctk.CTkLabel(top_bar, text=f"v{APP_VERSION}", anchor="e")
-    version_label.pack(side="right", padx=(20, 10))
+    version_label.pack(side="right")
 
     icon_label.image = small_icon
 
@@ -82,7 +82,7 @@ ctk.set_appearance_mode("dark")
 create_top_bar(app)
 
 main_content_frame = ctk.CTkFrame(app)
-main_content_frame.pack(fill="both", expand=True, padx=20, pady=20)
+main_content_frame.pack(fill="both", expand=True)
 
 update_main_content(current_tab)
 
