@@ -5,6 +5,24 @@ from consts import *
 
 # Constants
 TEXT_COLOR = "white"
+QR_CODE_PATH = "assets/monero-qr.png"
+
+def toggle_button_state(button, label, copied_label, qr_code_frame):
+    # Toggle the visual state of the button and the visibility of the label
+    if button.cget('fg_color') == BUTTON_FG:
+        button.configure(fg_color=SEL_BUTTON_FG)
+        label.pack(pady=(10, 0))
+        copied_label.place(relx=1.0, rely=1.0, anchor="se")
+    else:
+        button.configure(fg_color=BUTTON_FG)
+        qr_code_frame.configure(height=0)
+        label.pack_forget()        
+        copied_label.place_forget()
+
+def copy_to_clipboard(root, text):
+    root.clipboard_clear()
+    root.clipboard_append(text)
+    root.update()
 
 def create_about_page(parent, switch_tab):
     about_frame = ctk.CTkFrame(parent)
@@ -16,7 +34,7 @@ def create_about_page(parent, switch_tab):
         text="Polyseed Secret Sharing Tool",
         font=("Roboto", 24), anchor="center",
         text_color=TEXT_COLOR)
-    title_label.pack(pady=(10, 20))
+    title_label.pack(pady=(20, 10))
 
     # Description
 
@@ -35,7 +53,84 @@ def create_about_page(parent, switch_tab):
 
     # Jump to create button
 
-    create_tab_button = ctk.CTkButton(about_frame, text="Create a shared seed", command=lambda: switch_tab("Create"))
-    create_tab_button.pack(pady=10)
+    create_tab_button = ctk.CTkButton(
+        about_frame,
+        text="Create a shared seed",
+        fg_color=SEL_BUTTON_FG, hover_color=SEL_BUTTON_FG,
+        cursor="hand2",
+        font=("Roboto", 16),
+        text_color="black",
+        command=lambda: switch_tab("Create"))
+    create_tab_button.pack(pady=(5, 20))
+
+    # title
+
+    more_info_text = "More Info:"
+    more_info_label = ctk.CTkLabel(
+        about_frame,
+        text=more_info_text,
+        text_color=TEXT_COLOR,
+        font=("Roboto", 15))
+    more_info_label.pack()
+
+    # More Info Section
+    more_info_frame = ctk.CTkFrame(about_frame, fg_color=about_frame.cget("fg_color"))
+    more_info_frame.pack(pady=(0, 0))
+
+    # GitHub Link
+    github_button = ctk.CTkButton(
+        more_info_frame,
+        text="GitHub Repository",
+        fg_color=BUTTON_FG, hover_color=SEL_BUTTON_FG,
+        cursor="hand2",
+        text_color="white",
+        command=lambda: webbrowser.open("https://github.com/Unkn8wn69/psst"))
+    github_button.pack(side="left", padx=(0, 10))
+
+    # SSSS Info Link
+    ssss_info_button = ctk.CTkButton(
+        more_info_frame,
+        text="What is SSSS?",
+        fg_color=BUTTON_FG, hover_color=SEL_BUTTON_FG,
+        cursor="hand2",
+        text_color="white",
+        command=lambda: webbrowser.open("https://en.wikipedia.org/wiki/Shamir%27s_Secret_Sharing"))
+    ssss_info_button.pack(side="right")
+
+    # Donation Text
+    donation_label = ctk.CTkLabel(
+        about_frame,
+        text="Support with Monero: (Click to Copy or QR)",
+        font=("Roboto", 14),
+        text_color="white")
+    donation_label.pack(pady=(10,0))
+
+    qr_code_frame = ctk.CTkFrame(about_frame, height=0, fg_color=about_frame.cget("fg_color"))
+    qr_code_frame.pack(pady=(0, 10))
+
+    # Monero Address Button
+    monero_address_button = ctk.CTkButton(
+        about_frame,
+        fg_color=BUTTON_FG, hover_color=SEL_BUTTON_FG,
+        cursor="hand2",
+        text_color="black",
+        text=MONERO_ADDRESS,
+        command=lambda: [copy_to_clipboard(about_frame, copied_label),
+                         toggle_button_state(monero_address_button, qr_label, copied_label, qr_code_frame)]
+    )
+    monero_address_button.pack()
+
+    # Load QR Code Image
+    qr_code_image = tk.PhotoImage(file=QR_CODE_PATH)
+    qr_code_image_small = qr_code_image.subsample(1, 1)
+    qr_label = ctk.CTkLabel(qr_code_frame, text="", image=qr_code_image_small)
+
+    # Label to show "address copied to clipboard" message
+    copied_label = ctk.CTkLabel(about_frame,
+        anchor="se",
+        height=10,
+        font=("Roboto", 15),
+        text="Address copied to clipboard!",
+        text_color="white")
 
     return about_frame

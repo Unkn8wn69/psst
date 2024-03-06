@@ -56,7 +56,7 @@ def create_top_bar(parent):
     top_bar = ctk.CTkFrame(parent, height=50)
     top_bar.pack(side="top", fill="x")
 
-    title_label = ctk.CTkLabel(top_bar, text="PSST", anchor="w")
+    title_label = ctk.CTkLabel(top_bar, text="Polyseed Secret Sharing Tool", font=("Roboto", 20), anchor="w")
     title_label.pack(side="left", padx=(10, 20))
 
     tab_buttons(top_bar)
