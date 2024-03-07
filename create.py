@@ -5,11 +5,11 @@ from consts import *
 
 # Constants
 TEXT_COLOR = "white"
-groups = []
+groups = [{"name": "test", "shares": 5, "threshold": 1, "needed": True}]
 
 def group_table(frame):
     name = ctk.CTkLabel(master=frame, text="Name")
-    name.grid(row=0, column=0, padx=(20, 40))
+    name.grid(row=0, column=0, padx=(20, 60))
 
     shares = ctk.CTkLabel(master=frame, text="Shares")
     shares.grid(row=0, column=1, padx=20)
@@ -22,6 +22,40 @@ def group_table(frame):
 
     options = ctk.CTkLabel(master=frame, text="Options")
     options.grid(row=0, column=4, padx=20)
+
+    separator = ctk.CTkFrame(master=frame, height=2, fg_color="grey")
+    separator.grid(row=1, columnspan=5, sticky='ew', padx=20, pady=(5, 5))
+
+def delete_group(index, frame):
+    global groups
+    groups.pop(index)
+
+    for widget in frame.winfo_children():
+        widget.destroy()
+
+    group_table(frame)
+    generate_groups(frame)
+
+def generate_groups(frame):
+    global groups
+    row_index = 2
+    for index, group in enumerate(groups):
+        name = ctk.CTkLabel(master=frame, text=group["name"])
+        name.grid(row=row_index, column=0, padx=(20, 60))
+
+        shares = ctk.CTkLabel(master=frame, text=group["shares"])
+        shares.grid(row=row_index, column=1, padx=20)
+
+        threshold = ctk.CTkLabel(master=frame, text=group["threshold"])
+        threshold.grid(row=row_index, column=2, padx=20)
+
+        needed = ctk.CTkLabel(master=frame, text=str(group["needed"]))
+        needed.grid(row=row_index, column=3, padx=20)
+
+        delete = ctk.CTkButton(master=frame, text="Delete", command=lambda index=index: delete_group(index, frame))
+        delete.grid(row=row_index, column=4, padx=20)
+
+        row_index += 1
 
 def create_create_page(parent):
     create_frame = ctk.CTkFrame(parent, fg_color=parent.cget("fg_color"))
@@ -46,5 +80,7 @@ def create_create_page(parent):
     add_button.pack(side="right", anchor="se", padx=50)
 
     group_table(table_frame)
+
+    generate_groups(table_frame)
 
     return create_frame
