@@ -36,7 +36,6 @@ def generate_groups(frame):
     name_padx = (20, 50)
     column_padx = (10, 40)
     for index, group in enumerate(groups):
-        # Adjusting widget properties for better alignment, using specific padding for the Name field
         ctk.CTkLabel(master=frame, text=group["name"]).grid(row=row_index, column=0, padx=name_padx)
         ctk.CTkLabel(master=frame, text=str(group["shares"])).grid(row=row_index, column=1, padx=column_padx)
         ctk.CTkLabel(master=frame, text=str(group["threshold"])).grid(row=row_index, column=2, padx=column_padx)
@@ -101,6 +100,8 @@ def submit_group(table_frame, name, shares, threshold, needed, popup, error_labe
     global groups
     if name == "" or shares == "" or threshold == "":
         error_label.configure(text="Please fill out all fields")
+    elif any(group['name'] == name for group in groups):
+        error_label.configure(text="Group already exists")
     else:
         try: 
             shares_int = int(shares)
