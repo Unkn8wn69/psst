@@ -28,7 +28,6 @@ def update_main_content(tab):
 def switch_tab(tab):
     global current_tab
     current_tab = tab
-    print(f"Tab changed to: {tab}")
     update_tab_buttons()
     update_main_content(current_tab)
 

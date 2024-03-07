@@ -31,7 +31,6 @@ def delete_group(index, frame):
 
 def generate_groups(frame):
     global groups
-    print(groups)
     row_index = 2
     name_padx = (20, 50)
     column_padx = (10, 40)
@@ -114,7 +113,6 @@ def submit_group(table_frame, name, shares, threshold, needed, popup, error_labe
             else:
                     shares_int = int(shares)
                     threshold_int = int(threshold)
-                    print(needed)
 
                     groups.append({"name": name, "shares": shares_int, "threshold": threshold_int, "needed": needed})
                     popup.destroy()
@@ -128,9 +126,6 @@ def generate_shares():
     for group in groups:
         if group["needed"] == True:
             shares_to_complete += 1
-
-    print(shares)
-    print(shares_to_complete)
 
 
 def create_create_page(parent):
