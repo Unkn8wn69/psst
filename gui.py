@@ -4,6 +4,7 @@ import webbrowser
 
 # Local Imports
 from about import create_about_page
+from create import create_create_page
 from consts import *
 
 tabs = ["Create", "Recover", "About"]
@@ -19,6 +20,8 @@ def update_main_content(tab):
     clear_main_content()
     if tab == "About":
         create_about_page(main_content_frame, switch_tab)
+    elif tab == "Create":
+        create_create_page(main_content_frame)
 
 # Top bar functions
 
