@@ -11,16 +11,16 @@ def group_table(frame):
     name.grid(row=0, column=0, padx=(20, 60))
 
     shares = ctk.CTkLabel(master=frame, text="Shares")
-    shares.grid(row=0, column=1, padx=20)
+    shares.grid(row=0, column=1, padx=(0, 20))
 
     threshold = ctk.CTkLabel(master=frame, text="Threshold")
-    threshold.grid(row=0, column=2, padx=20)
+    threshold.grid(row=0, column=2, padx=(0, 20))
 
     needed = ctk.CTkLabel(master=frame, text="Needed1")
-    needed.grid(row=0, column=3, padx=20)
+    needed.grid(row=0, column=3, padx=(0, 20))
 
     options = ctk.CTkLabel(master=frame, text="Options")
-    options.grid(row=0, column=4, padx=20)
+    options.grid(row=0, column=4, padx=(0, 20))
 
     separator = ctk.CTkFrame(master=frame, height=2, fg_color="grey")
     separator.grid(row=1, columnspan=5, sticky='ew', padx=20, pady=(5, 5))
@@ -44,16 +44,17 @@ def generate_groups(frame):
         name.grid(row=row_index, column=0, padx=(20, 60))
 
         shares = ctk.CTkLabel(master=frame, text=group["shares"])
-        shares.grid(row=row_index, column=1, padx=20)
+        shares.grid(row=row_index, column=1, padx=(0, 20))
 
         threshold = ctk.CTkLabel(master=frame, text=group["threshold"])
-        threshold.grid(row=row_index, column=2, padx=20)
+        threshold.grid(row=row_index, column=2, padx=(0, 20))
 
-        needed = ctk.CTkLabel(master=frame, text=str(group["needed"]))
-        needed.grid(row=row_index, column=3, padx=20)
+        needed = tk.BooleanVar(value=group["needed"])
+        needed_checkbox = ctk.CTkCheckBox(master=frame, text="", state=ctk.DISABLED, variable=needed, onvalue=True, offvalue=False)
+        needed_checkbox.grid(row=row_index, column=3, padx=(20, 20))
 
         delete = ctk.CTkButton(master=frame, text="Delete", command=lambda index=index: delete_group(index, frame))
-        delete.grid(row=row_index, column=4, padx=20)
+        delete.grid(row=row_index, column=4, padx=(0, 20))
 
         row_index += 1
 
