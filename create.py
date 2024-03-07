@@ -17,7 +17,7 @@ def group_table(frame):
     threshold = ctk.CTkLabel(master=frame, text="Threshold")
     threshold.grid(row=0, column=2, padx=20)
 
-    needed = ctk.CTkLabel(master=frame, text="Needed?")
+    needed = ctk.CTkLabel(master=frame, text="Needed1")
     needed.grid(row=0, column=3, padx=20)
 
     options = ctk.CTkLabel(master=frame, text="Options")
@@ -89,7 +89,7 @@ def add_group_popup(table_frame, parent):
 
     # Checkbox for Needed
     needed_var = tk.BooleanVar()
-    needed_check = ctk.CTkCheckBox(popup, text="Needed for Seed Recovery?")
+    needed_check = ctk.CTkCheckBox(popup, text="Needed for Seed Recovery?", variable=needed_var, onvalue=True, offvalue=False)
     needed_check.grid(row=row_index, column=0, columnspan=2, pady=(10, 0), padx=20)
     row_index += 1
 
@@ -105,6 +105,7 @@ def submit_group(table_frame, name, shares, threshold, needed, popup):
     try:
         shares_int = int(shares)
         threshold_int = int(threshold)
+        print(needed)
 
         groups.append({"name": name, "shares": shares_int, "threshold": threshold_int, "needed": needed})
         popup.destroy()
