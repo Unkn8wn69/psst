@@ -130,6 +130,9 @@ def create_create_page(parent):
     create_frame = ctk.CTkFrame(parent, fg_color=parent.cget("fg_color"))
     create_frame.pack(fill="both", expand=True, padx=20, pady=20)
 
+    group_header = ctk.CTkLabel(master=create_frame, text="Seed", font=("Roboto", 20))
+    group_header.pack(anchor="nw", pady=(0, 10))
+
     textbox = ctk.CTkTextbox(master=create_frame, width=400, height=100, corner_radius=15)
     textbox.pack(anchor="nw", pady=(0,15))
 
