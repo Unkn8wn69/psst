@@ -1,6 +1,7 @@
 import tkinter as tk
 import customtkinter as ctk
 import webbrowser
+from PIL import Image
 
 # Local Imports
 from about import create_about_page
@@ -63,8 +64,8 @@ def create_top_bar(parent):
 
     tab_buttons(top_bar)
 
-    original_icon = tk.PhotoImage(file=GITHUB_LOGO_PATH)
-    small_icon = original_icon.subsample(6, 6)
+    original_icon = ctk.CTkImage(dark_image=Image.open(GITHUB_LOGO_PATH))
+    small_icon = original_icon.create_scaled_photo_image(2, appearance_mode="dark")
     icon_label = ctk.CTkLabel(top_bar, text="", image=small_icon, cursor="hand2")
     icon_label.pack(side="right", padx=10, pady=5)
     icon_label.bind("<Button-1>", lambda event: open_github())
