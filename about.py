@@ -122,9 +122,9 @@ def create_about_page(parent, switch_tab):
     monero_address_button.pack()
 
     # Load QR Code Image
-    qr_code_image = ctk.CTkImage(dark_image=Image.open(QR_CODE_PATH))
-    qr_code_image_small = qr_code_image.create_scaled_photo_image(6, appearance_mode="dark")
-    qr_label = ctk.CTkLabel(qr_code_frame, text="", image=qr_code_image_small)
+    qr_image = ctk.CTkImage(dark_image=Image.open(QR_CODE_PATH), size=(115,115))
+    qr_label = ctk.CTkLabel(qr_code_frame, text="", image=qr_image)
+    
 
     # Label to show "address copied to clipboard" message
     copied_label = ctk.CTkLabel(about_frame,

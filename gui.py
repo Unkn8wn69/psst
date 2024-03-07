@@ -64,16 +64,16 @@ def create_top_bar(parent):
 
     tab_buttons(top_bar)
 
-    original_icon = ctk.CTkImage(dark_image=Image.open(GITHUB_LOGO_PATH))
-    small_icon = original_icon.create_scaled_photo_image(2, appearance_mode="dark")
-    icon_label = ctk.CTkLabel(top_bar, text="", image=small_icon, cursor="hand2")
-    icon_label.pack(side="right", padx=10, pady=5)
-    icon_label.bind("<Button-1>", lambda event: open_github())
+    github_icon = ctk.CTkImage(dark_image=Image.open(GITHUB_LOGO_PATH), size=(45,45))
+    github_icon_label = ctk.CTkLabel(top_bar, text="", image=github_icon, cursor="hand2")
+
+    github_icon_label.pack(side="right", padx=10, pady=5)
+    github_icon_label.bind("<Button-1>", lambda event: open_github())
 
     version_label = ctk.CTkLabel(top_bar, text=f"v{APP_VERSION}", anchor="e")
     version_label.pack(side="right")
 
-    icon_label.image = small_icon
+    github_icon_label.image = github_icon
 
 # Start of the application
 
