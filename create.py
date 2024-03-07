@@ -5,6 +5,7 @@ from consts import *
 
 # Constants
 TEXT_COLOR = "white"
+groups = []
 
 def group_table(frame):
     name = ctk.CTkLabel(master=frame, text="Name")
@@ -34,6 +35,15 @@ def create_create_page(parent):
 
     table_frame = ctk.CTkFrame(master=create_frame)
     table_frame.pack(fill="both", expand=True, pady=20)
+
+    button_frame = ctk.CTkFrame(create_frame, fg_color=create_frame.cget("fg_color"))
+    button_frame.pack()
+
+    create_button = ctk.CTkButton(master=button_frame, text="Generate Shares")
+    create_button.pack(side="right", anchor="se", padx=50)
+
+    add_button = ctk.CTkButton(master=button_frame, text="Add Group")
+    add_button.pack(side="right", anchor="se", padx=50)
 
     group_table(table_frame)
 
