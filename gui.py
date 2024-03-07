@@ -77,6 +77,7 @@ def create_top_bar(parent):
 app = ctk.CTk()
 app.title(APP_TITLE)
 app.geometry(APP_GEOMETRY)
+app.minsize(int(APP_GEOMETRY.split("x")[0]), int(APP_GEOMETRY.split("x")[1]))
 ctk.set_appearance_mode("dark")
 
 create_top_bar(app)
