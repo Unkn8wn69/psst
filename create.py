@@ -5,7 +5,7 @@ from consts import *
 
 # Constants
 TEXT_COLOR = "white"
-groups = [{"name": "test", "shares": 5, "threshold": 1, "needed": True}]
+groups = []
 
 def group_table(frame):
     name = ctk.CTkLabel(master=frame, text="Name")
@@ -38,6 +38,7 @@ def delete_group(index, frame):
 
 def generate_groups(frame):
     global groups
+    print(groups)
     row_index = 2
     for index, group in enumerate(groups):
         name = ctk.CTkLabel(master=frame, text=group["name"])
@@ -56,6 +57,60 @@ def generate_groups(frame):
         delete.grid(row=row_index, column=4, padx=20)
 
         row_index += 1
+
+def add_group_popup(table_frame, parent):
+    popup = ctk.CTkToplevel(parent)
+    popup.geometry("350x250")
+    popup.minsize(350, 250)
+    popup.title("Add Group")
+
+    row_index = 0
+
+    # Name Entry
+    name_label = ctk.CTkLabel(popup, text="Name:")
+    name_label.grid(row=row_index, column=0, pady=(10, 0), sticky="w", padx=(20,10))
+    name_entry = ctk.CTkEntry(popup)
+    name_entry.grid(row=row_index, column=1, pady=(10, 0), sticky="ew", padx=20)
+    row_index += 1
+
+    # Number of Shares Entry
+    shares_label = ctk.CTkLabel(popup, text="Number of Shares:")
+    shares_label.grid(row=row_index, column=0, pady=(10, 0), sticky="w", padx=(20,10))
+    shares_entry = ctk.CTkEntry(popup)
+    shares_entry.grid(row=row_index, column=1, pady=(10, 0), sticky="ew", padx=20)
+    row_index += 1
+
+    # Threshold of Shares Entry
+    threshold_label = ctk.CTkLabel(popup, text="Threshold of Shares:")
+    threshold_label.grid(row=row_index, column=0, pady=(10, 0), sticky="w", padx=(20,10))
+    threshold_entry = ctk.CTkEntry(popup)
+    threshold_entry.grid(row=row_index, column=1, pady=(10, 0), sticky="ew", padx=20)
+    row_index += 1
+
+    # Checkbox for Needed
+    needed_var = tk.BooleanVar()
+    needed_check = ctk.CTkCheckBox(popup, text="Needed for Seed Recovery?")
+    needed_check.grid(row=row_index, column=0, columnspan=2, pady=(10, 0), padx=20)
+    row_index += 1
+
+    # Submit Button
+    submit_button = ctk.CTkButton(popup, text="Add Group", command=lambda: submit_group(table_frame, name_entry.get(), shares_entry.get(), threshold_entry.get(), needed_var.get(), popup))
+    submit_button.grid(row=row_index, column=0, columnspan=2, pady=(20, 0), padx=20)
+
+    popup.grid_columnconfigure(1, weight=1)
+
+
+def submit_group(table_frame, name, shares, threshold, needed, popup):
+    global groups
+    try:
+        shares_int = int(shares)
+        threshold_int = int(threshold)
+
+        groups.append({"name": name, "shares": shares_int, "threshold": threshold_int, "needed": needed})
+        popup.destroy()
+        generate_groups(table_frame)
+    except ValueError:
+        print("Please enter valid numbers for shares and threshold.")
 
 def create_create_page(parent):
     create_frame = ctk.CTkFrame(parent, fg_color=parent.cget("fg_color"))
@@ -76,7 +131,7 @@ def create_create_page(parent):
     create_button = ctk.CTkButton(master=button_frame, text="Generate Shares")
     create_button.pack(side="right", anchor="se", padx=50)
 
-    add_button = ctk.CTkButton(master=button_frame, text="Add Group")
+    add_button = ctk.CTkButton(master=button_frame, text="Add Group", command=lambda: add_group_popup(table_frame, create_frame))
     add_button.pack(side="right", anchor="se", padx=50)
 
     group_table(table_frame)
