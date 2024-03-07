@@ -43,7 +43,7 @@ def tab_buttons(top_bar):
         if tab == current_tab:
             button.configure(fg_color=SEL_BUTTON_FG, hover_color=SEL_BUTTON_FG, text_color="black")
         else:
-            button.configure(fg_color=BUTTON_FG, hover_color=SEL_BUTTON_FG, text_color="black")
+            button.configure(fg_color=BUTTON_FG, hover_color=SEL_BUTTON_FG, text_color="white")
 
 def update_tab_buttons():
     for widget in app.winfo_children():
@@ -53,7 +53,7 @@ def update_tab_buttons():
                     if button.tab_name == current_tab:
                         button.configure(fg_color=SEL_BUTTON_FG, hover_color=SEL_BUTTON_FG, text_color="black")
                     else:
-                        button.configure(fg_color=BUTTON_FG, hover_color=SEL_BUTTON_FG, text_color="black")
+                        button.configure(fg_color=BUTTON_FG, hover_color=SEL_BUTTON_FG, text_color="white")
 
 def create_top_bar(parent):
     top_bar = ctk.CTkFrame(parent, height=50)
