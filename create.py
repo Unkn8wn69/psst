@@ -4,7 +4,6 @@ import webbrowser
 from consts import *
 
 # Constants
-TEXT_COLOR = "white"
 groups = []
 
 def group_table(frame):
@@ -110,16 +109,22 @@ def submit_group(table_frame, name, shares, threshold, needed, popup, error_labe
     if name == "" or shares == "" or threshold == "":
         error_label.configure(text="Please fill out all fields")
     else:
-        try:
+        try: 
             shares_int = int(shares)
             threshold_int = int(threshold)
-            print(needed)
-
-            groups.append({"name": name, "shares": shares_int, "threshold": threshold_int, "needed": needed})
-            popup.destroy()
-            generate_groups(table_frame)
         except ValueError:
             error_label.configure(text="Please enter valid numbers for shares and threshold.")
+        finally:
+            if int(threshold) > int(shares):
+                error_label.configure(text="Threshold can't be higher than number of shares!")
+            else:
+                    shares_int = int(shares)
+                    threshold_int = int(threshold)
+                    print(needed)
+
+                    groups.append({"name": name, "shares": shares_int, "threshold": threshold_int, "needed": needed})
+                    popup.destroy()
+                    generate_groups(table_frame)
 
 def generate_shares():
     global groups
