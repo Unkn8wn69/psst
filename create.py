@@ -113,6 +113,19 @@ def submit_group(table_frame, name, shares, threshold, needed, popup):
     except ValueError:
         print("Please enter valid numbers for shares and threshold.")
 
+def generate_shares():
+    global groups
+    
+    shares = len(groups)
+    shares_to_complete = 0
+    for group in groups:
+        if group["needed"] == True:
+            shares_to_complete += 1
+
+    print(shares)
+    print(shares_to_complete)
+
+
 def create_create_page(parent):
     create_frame = ctk.CTkFrame(parent, fg_color=parent.cget("fg_color"))
     create_frame.pack(fill="both", expand=True, padx=20, pady=20)
@@ -129,7 +142,7 @@ def create_create_page(parent):
     button_frame = ctk.CTkFrame(create_frame, fg_color=create_frame.cget("fg_color"))
     button_frame.pack()
 
-    create_button = ctk.CTkButton(master=button_frame, text="Generate Shares")
+    create_button = ctk.CTkButton(master=button_frame, text="Generate Shares", command=generate_shares())
     create_button.pack(side="right", anchor="se", padx=50)
 
     add_button = ctk.CTkButton(master=button_frame, text="Add Group", command=lambda: add_group_popup(table_frame, create_frame))
