@@ -6,6 +6,7 @@ from consts import *
 
 # Constants
 groups = []
+seed = ""
 
 def group_table(frame):
     header_padx = (10, 40)
@@ -48,25 +49,6 @@ def generate_groups(frame):
         delete_button.grid(row=row_index, column=4, padx=column_padx)
         
         row_index += 1
-
-def validate_input(textbox, error_label):
-    with open('wordlist.json', 'r') as file:
-        wordlist = json.load(file)
-    
-    input_words = textbox.get("1.0", "end-1c").strip().split(" ")
-    
-    if "\n" in textbox.get("1.0", "end-1c"):
-        error_label.configure(text="Input must not contain new lines.")
-        return
-    if len(input_words) != 16:
-        error_label.configure(text="Input must contain exactly 16 words.")
-        return
-
-    if not all(word in wordlist for word in input_words):
-        error_label.configure(text="All words must be a correct polyseed words.")
-        return
-
-    error_label.configure(text="")
 
 def add_group_popup(table_frame, parent):
     popup = ctk.CTkToplevel(parent)
@@ -125,11 +107,10 @@ def submit_group(table_frame, name, shares, threshold, needed, popup, error_labe
         try: 
             shares_int = int(shares)
             threshold_int = int(threshold)
-        except ValueError:
-            error_label.configure(text="Please enter valid numbers for shares and threshold.")
-        finally:
             if int(threshold) > int(shares):
                 error_label.configure(text="Threshold can't be higher than number of shares!")
+            elif int(threshold) >= 16 or int(shares) >= 16:
+                error_label.configure(text="Shares and Threshold can't be over 16!")
             else:
                     shares_int = int(shares)
                     threshold_int = int(threshold)
@@ -137,19 +118,60 @@ def submit_group(table_frame, name, shares, threshold, needed, popup, error_labe
                     groups.append({"name": name, "shares": shares_int, "threshold": threshold_int, "needed": needed})
                     popup.destroy()
                     generate_groups(table_frame)
+        except ValueError:
+            error_label.configure(text="Please enter valid numbers for shares and threshold.")
+
+def validate_input(textbox, error_label):
+    global seed
+
+    with open('wordlist.json', 'r') as file:
+        wordlist = json.load(file)
+    
+    input_words = textbox.get("1.0", "end-1c").strip().split(" ")
+    
+    if "\n" in textbox.get("1.0", "end-1c"):
+        error_label.configure(text="Input must not contain new lines.")
+        return
+    if len(input_words) != 16:
+        error_label.configure(text="Input must contain exactly 16 words.")
+        return
+
+    if not all(word in wordlist for word in input_words):
+        error_label.configure(text="All words must be a correct polyseed words.")
+        return
+
+    error_label.configure(text="")
+    seed = textbox.get("1.0", "end-1c")
+    print(seed)
+    return True
 
 def generate_shares(textbox, error_label):
     global groups
 
-    validate_input(textbox, error_label)
-    
-    shares = len(groups)
-    shares_to_complete = 0
+    # apple apple apple apple apple apple apple apple apple apple apple apple apple apple apple apple
+
+    if validate_input(textbox, error_label):
+        if len(groups) < 1:
+            error_label.configure(text="You have to at least add one group")
+        elif all(group['needed'] != True for group in groups):
+            error_label.configure(text="At least one groups has\nto be needed for restoring the seed.")
+        else:
+            generate_shares_command()
+
+def generate_shares_command():
+    global seed
+    global groups
+
+    group_threshold = 0
+    group_parts = []
+
     for group in groups:
-        if group["needed"] == True:
-            shares_to_complete += 1
+        if group["needed"]:
+            group_threshold += 1
+        group_parts.append(f"--group {group['threshold']} {group['shares']}")
     
-    
+    command_string = f"--group-threshold {group_threshold} " + " ".join(group_parts)
+    print(command_string)
 
 
 def create_create_page(parent):
