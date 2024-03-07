@@ -94,24 +94,32 @@ def add_group_popup(table_frame, parent):
     row_index += 1
 
     # Submit Button
-    submit_button = ctk.CTkButton(popup, text="Add Group", command=lambda: submit_group(table_frame, name_entry.get(), shares_entry.get(), threshold_entry.get(), needed_var.get(), popup))
+    submit_button = ctk.CTkButton(popup, text="Add Group", command=lambda: submit_group(table_frame, name_entry.get(), shares_entry.get(), threshold_entry.get(), needed_var.get(), popup, error_label))
     submit_button.grid(row=row_index, column=0, columnspan=2, pady=(20, 0), padx=20)
+
+    # Error field
+
+    error_label = ctk.CTkLabel(master=popup, text="", text_color="red", font=("Roboto", 12))
+    error_label.grid(row=row_index+1, columnspan=5)
 
     popup.grid_columnconfigure(1, weight=1)
 
 
-def submit_group(table_frame, name, shares, threshold, needed, popup):
+def submit_group(table_frame, name, shares, threshold, needed, popup, error_label):
     global groups
-    try:
-        shares_int = int(shares)
-        threshold_int = int(threshold)
-        print(needed)
+    if name == "" or shares == "" or threshold == "":
+        error_label.configure(text="Please fill out all fields")
+    else:
+        try:
+            shares_int = int(shares)
+            threshold_int = int(threshold)
+            print(needed)
 
-        groups.append({"name": name, "shares": shares_int, "threshold": threshold_int, "needed": needed})
-        popup.destroy()
-        generate_groups(table_frame)
-    except ValueError:
-        print("Please enter valid numbers for shares and threshold.")
+            groups.append({"name": name, "shares": shares_int, "threshold": threshold_int, "needed": needed})
+            popup.destroy()
+            generate_groups(table_frame)
+        except ValueError:
+            error_label.configure(text="Please enter valid numbers for shares and threshold.")
 
 def generate_shares():
     global groups
