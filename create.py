@@ -1,6 +1,7 @@
 import tkinter as tk
 import customtkinter as ctk
 import webbrowser
+import json
 from consts import *
 
 # Constants
@@ -47,6 +48,25 @@ def generate_groups(frame):
         delete_button.grid(row=row_index, column=4, padx=column_padx)
         
         row_index += 1
+
+def validate_input(textbox, error_label):
+    with open('wordlist.json', 'r') as file:
+        wordlist = json.load(file)
+    
+    input_words = textbox.get("1.0", "end-1c").strip().split(" ")
+    
+    if "\n" in textbox.get("1.0", "end-1c"):
+        error_label.configure(text="Input must not contain new lines.")
+        return
+    if len(input_words) != 16:
+        error_label.configure(text="Input must contain exactly 16 words.")
+        return
+
+    if not all(word in wordlist for word in input_words):
+        error_label.configure(text="All words must be a correct polyseed words.")
+        return
+
+    error_label.configure(text="")
 
 def add_group_popup(table_frame, parent):
     popup = ctk.CTkToplevel(parent)
@@ -118,25 +138,35 @@ def submit_group(table_frame, name, shares, threshold, needed, popup, error_labe
                     popup.destroy()
                     generate_groups(table_frame)
 
-def generate_shares():
+def generate_shares(textbox, error_label):
     global groups
+
+    validate_input(textbox, error_label)
     
     shares = len(groups)
     shares_to_complete = 0
     for group in groups:
         if group["needed"] == True:
             shares_to_complete += 1
+    
+    
 
 
 def create_create_page(parent):
     create_frame = ctk.CTkFrame(parent, fg_color=parent.cget("fg_color"))
     create_frame.pack(fill="both", expand=True, padx=20, pady=20)
 
-    group_header = ctk.CTkLabel(master=create_frame, text="Seed", font=("Roboto", 20))
-    group_header.pack(anchor="nw", pady=(0, 10))
+    seed_header = ctk.CTkLabel(master=create_frame, text="Seed", font=("Roboto", 20))
+    seed_header.pack(anchor="nw", pady=(0, 10))
 
-    textbox = ctk.CTkTextbox(master=create_frame, width=400, height=100, corner_radius=15)
-    textbox.pack(anchor="nw", pady=(0,15))
+    seed_frame = ctk.CTkFrame(master=create_frame, fg_color=parent.cget("fg_color"))
+    seed_frame.pack(fill='x', pady=(0, 10))
+
+    textbox = ctk.CTkTextbox(master=seed_frame, width=500, height=100, corner_radius=15)
+    textbox.pack(side="left", padx=(0, 10), anchor="w")
+
+    error_label = ctk.CTkLabel(master=seed_frame, text="", text_color="red")
+    error_label.pack(side="right", padx=(10, 50))
 
     group_header = ctk.CTkLabel(master=create_frame, text="Groups", font=("Roboto", 20))
     group_header.pack(anchor="nw")
@@ -147,7 +177,7 @@ def create_create_page(parent):
     button_frame = ctk.CTkFrame(create_frame, fg_color=create_frame.cget("fg_color"))
     button_frame.pack()
 
-    create_button = ctk.CTkButton(master=button_frame, text="Generate Shares", command=generate_shares())
+    create_button = ctk.CTkButton(master=button_frame, text="Generate Shares", command=lambda: generate_shares(textbox, error_label))
     create_button.pack(side="right", anchor="se", padx=50)
 
     add_button = ctk.CTkButton(master=button_frame, text="Add Group", command=lambda: add_group_popup(table_frame, create_frame))
