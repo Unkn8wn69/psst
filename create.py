@@ -1,7 +1,9 @@
 import tkinter as tk
 import customtkinter as ctk
 import webbrowser
+import re
 import json
+import subprocess
 from consts import *
 
 # Constants
@@ -190,6 +192,30 @@ def generate_shares_command():
     command_string =  base_command + command_string + f" --master-secret {hex_seed}"
 
     print(command_string)
+
+    try:
+        result = subprocess.run(command_string, shell=True, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+
+        groups_output = re.split(r'Group \d+ of \d+ - \d+ of \d+ shares required:\n', result.stdout.strip())
+        group_info_output = re.findall(r'Group (\d+) of \d+ - (\d+) of (\d+) shares required:', result.stdout)
+        group_data = []
+        for info, group in zip(group_info_output, groups_output[1:]):
+            group_name = groups[int(info[0])-1]['name']
+            threshold = int(info[1])
+            total_shares = int(info[2])
+            shares = [share.strip() for share in group.strip().split('\n')]
+
+            group_data.append({
+                "name": group_name,
+                "shares": shares,
+                "total_shares": total_shares,
+                "threshold": threshold
+            })
+
+        print(group_data)
+
+    except subprocess.CalledProcessError as e:
+        print(f"Error occurred: {e.stderr}")
 
 
 def create_create_page(parent):
