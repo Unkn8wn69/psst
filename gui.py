@@ -41,9 +41,9 @@ def tab_buttons(top_bar):
         button.pack(side="left", padx=5)
         button.tab_name = tab
         if tab == current_tab:
-            button.configure(fg_color=SEL_BUTTON_FG, hover_color=SEL_BUTTON_FG, text_color="black")
+            button.configure(fg_color=SEL_BUTTON_FG, hover_color=SEL_BUTTON_FG, text_color="black", height=32)
         else:
-            button.configure(fg_color=BUTTON_FG, hover_color=SEL_BUTTON_FG, text_color="white")
+            button.configure(fg_color=BUTTON_FG, hover_color=SEL_BUTTON_FG, text_color="white", height=30)
 
 def update_tab_buttons():
     for widget in app.winfo_children():
@@ -51,9 +51,9 @@ def update_tab_buttons():
             for button in widget.winfo_children():
                 if isinstance(button, ctk.CTkButton) and hasattr(button, 'tab_name'):
                     if button.tab_name == current_tab:
-                        button.configure(fg_color=SEL_BUTTON_FG, hover_color=SEL_BUTTON_FG, text_color="black")
+                        button.configure(fg_color=SEL_BUTTON_FG, hover_color=SEL_BUTTON_FG, text_color="black", height=32)
                     else:
-                        button.configure(fg_color=BUTTON_FG, hover_color=SEL_BUTTON_FG, text_color="white")
+                        button.configure(fg_color=BUTTON_FG, hover_color=SEL_BUTTON_FG, text_color="white", height=30)
 
 def create_top_bar(parent):
     top_bar = ctk.CTkFrame(parent, height=50)
