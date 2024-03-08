@@ -158,10 +158,25 @@ def generate_shares(textbox, error_label):
         else:
             generate_shares_command()
 
+def seed_to_hex(seed, json_filepath):
+    with open(json_filepath, 'r') as file:
+        data = json.load(file)
+    wordlist = data
+    
+    words = seed.split()
+    
+    indexes = [wordlist.index(word) for word in words]
+    hex_string = ''.join(format(index, '03x') for index in indexes)
+    
+    return hex_string
+
 def generate_shares_command():
     global seed
     global groups
+    
+    base_command = 'cd python-shamir-mnemonic && python3 -m shamir_mnemonic.cli create'
 
+    hex_seed = seed_to_hex(seed, "wordlist.json")
     group_threshold = 0
     group_parts = []
 
@@ -170,7 +185,10 @@ def generate_shares_command():
             group_threshold += 1
         group_parts.append(f"--group {group['threshold']} {group['shares']}")
     
-    command_string = f"--group-threshold {group_threshold} " + " ".join(group_parts)
+    command_string = f" custom --group-threshold {group_threshold} " + " ".join(group_parts)
+
+    command_string =  base_command + command_string + f" --master-secret {hex_seed}"
+
     print(command_string)
 
 
