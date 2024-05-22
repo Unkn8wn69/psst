@@ -190,7 +190,7 @@ def generate_shares_command(error_label, parent):
 
     command_string =  base_command + command_string + f" --master-secret {hex_seed}"
 
-    print(command_string)
+    # print(command_string)
 
     try:
         result = subprocess.run(command_string, shell=True, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
@@ -211,7 +211,7 @@ def generate_shares_command(error_label, parent):
                 "threshold": threshold
             })
 
-        print(group_data)
+        # print(group_data)
 
         shares = group_data
 
