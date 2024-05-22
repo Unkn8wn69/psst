@@ -10,8 +10,11 @@ from consts import *
 # Constants
 groups = []
 seed = ""
+group_threshold = 1
 
 shares = []
+
+# TODO: Make group table smaller and add small help / instruction field next to it
 
 def group_table(frame):
     header_padx = (10, 40)
@@ -20,7 +23,6 @@ def group_table(frame):
     ctk.CTkLabel(master=frame, text="Name").grid(row=0, column=0, padx=name_padx)
     ctk.CTkLabel(master=frame, text="Shares").grid(row=0, column=1, padx=header_padx)
     ctk.CTkLabel(master=frame, text="Threshold").grid(row=0, column=2, padx=header_padx)
-    ctk.CTkLabel(master=frame, text="Needed").grid(row=0, column=3, padx=header_padx)
     ctk.CTkLabel(master=frame, text="Options").grid(row=0, column=4, padx=header_padx)
     
     separator = ctk.CTkFrame(master=frame, height=2, fg_color="grey")
@@ -46,10 +48,6 @@ def generate_groups(frame):
         ctk.CTkLabel(master=frame, text=str(group["shares"])).grid(row=row_index, column=1, padx=column_padx)
         ctk.CTkLabel(master=frame, text=str(group["threshold"])).grid(row=row_index, column=2, padx=column_padx)
         
-        needed = tk.BooleanVar(value=group["needed"])
-        needed_checkbox = ctk.CTkCheckBox(master=frame, text="", variable=needed, onvalue=True, offvalue=False, state=ctk.DISABLED)
-        needed_checkbox.grid(row=row_index, column=3, padx=(40, 0))
-        
         delete_button = ctk.CTkButton(master=frame, text="Delete", width=50, height=20, command=lambda index=index: delete_group(index, frame))
         delete_button.grid(row=row_index, column=4, padx=column_padx)
         
@@ -57,8 +55,8 @@ def generate_groups(frame):
 
 def add_group_popup(table_frame, parent):
     popup = ctk.CTkToplevel(parent)
-    popup.geometry("350x250")
-    popup.minsize(350, 250)
+    popup.geometry("350x200")
+    popup.minsize(350, 200)
     popup.title("Add Group")
 
     row_index = 0
@@ -84,14 +82,8 @@ def add_group_popup(table_frame, parent):
     threshold_entry.grid(row=row_index, column=1, pady=(10, 0), sticky="ew", padx=20)
     row_index += 1
 
-    # Checkbox for Needed
-    needed_var = tk.BooleanVar()
-    needed_check = ctk.CTkCheckBox(popup, text="Needed for Seed Recovery?", variable=needed_var, onvalue=True, offvalue=False)
-    needed_check.grid(row=row_index, column=0, columnspan=2, pady=(10, 0), padx=20)
-    row_index += 1
-
     # Submit Button
-    submit_button = ctk.CTkButton(popup, text="Add Group", command=lambda: submit_group(table_frame, name_entry.get(), shares_entry.get(), threshold_entry.get(), needed_var.get(), popup, error_label))
+    submit_button = ctk.CTkButton(popup, text="Add Group", command=lambda: submit_group(table_frame, name_entry.get(), shares_entry.get(), threshold_entry.get(), popup, error_label))
     submit_button.grid(row=row_index, column=0, columnspan=2, pady=(20, 0), padx=20)
 
     # Error field
@@ -102,7 +94,7 @@ def add_group_popup(table_frame, parent):
     popup.grid_columnconfigure(1, weight=1)
 
 
-def submit_group(table_frame, name, shares, threshold, needed, popup, error_label):
+def submit_group(table_frame, name, shares, threshold, popup, error_label):
     global groups
     if name == "" or shares == "" or threshold == "":
         error_label.configure(text="Please fill out all fields")
@@ -120,7 +112,7 @@ def submit_group(table_frame, name, shares, threshold, needed, popup, error_labe
                     shares_int = int(shares)
                     threshold_int = int(threshold)
 
-                    groups.append({"name": name, "shares": shares_int, "threshold": threshold_int, "needed": needed})
+                    groups.append({"name": name, "shares": shares_int, "threshold": threshold_int})
                     popup.destroy()
                     generate_groups(table_frame)
         except ValueError:
@@ -155,10 +147,11 @@ def generate_shares(textbox, error_label, parent):
     if validate_input(textbox, error_label):
         if len(groups) < 1:
             error_label.configure(text="You have to at least add one group")
-        elif all(group['needed'] != True for group in groups):
-            error_label.configure(text="At least one groups has\nto be needed for restoring the seed.")
         else:
-            generate_shares_command(error_label, parent)
+            if len(groups) == 1:
+                generate_shares_command(error_label, parent)
+            else:
+                group_threshold_popup(parent, error_label)
 
 def seed_to_hex(seed, json_filepath):
     with open(json_filepath, 'r') as file:
@@ -176,23 +169,21 @@ def generate_shares_command(error_label, parent):
     global seed
     global groups
     global shares
+    global group_threshold
     
     base_command = 'cd python-shamir-mnemonic && python3 -m shamir_mnemonic.cli create'
 
     hex_seed = seed_to_hex(seed, "wordlist.json")
-    group_threshold = 0
     group_parts = []
 
     for group in groups:
-        if group["needed"]:
-            group_threshold += 1
         group_parts.append(f"--group {group['threshold']} {group['shares']}")
     
     command_string = f" custom --group-threshold {group_threshold} " + " ".join(group_parts)
 
     command_string =  base_command + command_string + f" --master-secret {hex_seed}"
 
-    # print(command_string)
+    print(command_string)
 
     try:
         result = subprocess.run(command_string, shell=True, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
@@ -262,6 +253,53 @@ def create_create_page(parent):
 
     return create_frame
 
+# Functions for group-threshold popup
+
+def group_threshold_popup(parent, error_label):
+    global group_threshold
+    global groups
+
+    popup = ctk.CTkToplevel(parent)
+    popup.geometry("350x200")
+    popup.minsize(350, 200)
+    popup.title("Set group threshold")
+
+    popup.focus_force()
+
+    # Label above the buttons
+    label = ctk.CTkLabel(popup, text=f"How many of your {len(groups)} groups\nshould be needed for recovery?", font=("Roboto", 20))
+    label.pack(pady=(20, 20), padx=20)
+
+    # Label to display the current threshold
+    threshold_label = ctk.CTkLabel(popup, text=f"Current Threshold: {group_threshold}", font=("Roboto", 18))
+    threshold_label.pack(pady=(0, 10))
+
+    def set_group_threshold(value):
+        global group_threshold
+        group_threshold = int(float(value))
+        threshold_label.configure(text=f"Current Threshold: {group_threshold}", font=("Roboto", 18))
+
+    slider = ctk.CTkSlider(popup, from_=1, to=len(groups), command=set_group_threshold, number_of_steps=len(groups)-1)
+    slider.set(group_threshold) 
+    slider.pack(pady=(0, 5), padx=20, fill='x')
+
+    # Frame for buttons
+    button_frame = ctk.CTkFrame(popup)
+    button_frame.pack(pady=(10, 0), padx=20, fill='x')
+
+    # Cancel button to close the popup without saving
+    cancel_button = ctk.CTkButton(button_frame, text="Cancel", command=popup.destroy)
+    cancel_button.pack(side='left', expand=True, fill='x', padx=(0, 5))
+
+    # Done button to save changes and close the popup
+    done_button = ctk.CTkButton(button_frame, text="Done", command=lambda: close_threshold_popup(popup, parent, error_label))
+    done_button.pack(side='left', expand=True, fill='x', padx=(5, 0))
+    
+def close_threshold_popup(popup, parent, error_label):
+    popup.destroy()
+    generate_shares_command(error_label, parent)
+
+
 
 # Functions for share saving popup
 
@@ -272,6 +310,7 @@ def save_shares_to_file():
                                              filetypes=[("Text files", "*.txt"), ("All files", "*.*")])
     if file_path:
         with open(file_path, 'w') as file:
+            file.write(f"{group_threshold} of the {len(shares)} groups have to be gathered for full recovery.\n\n")
             for group in shares:
 
                 file.write(f"Group Name: {group['name']}\n")
@@ -298,7 +337,7 @@ def create_share_popup(parent):
 
     # Frame for buttons
     button_frame = ctk.CTkFrame(popup)
-    button_frame.pack(pady=10, padx=20, fill='x')
+    button_frame.pack(pady=(10, 0), padx=20, fill='x')
 
     # Buttons for actions
     display_button = ctk.CTkButton(button_frame, text="Display Shares",
