@@ -6,6 +6,7 @@ import json
 import subprocess
 from tkinter import filedialog, messagebox
 from consts import *
+from widgets import *
 
 # Constants
 groups = []
@@ -241,10 +242,10 @@ def create_create_page(parent):
     button_frame = ctk.CTkFrame(create_frame, fg_color=create_frame.cget("fg_color"))
     button_frame.pack()
 
-    create_button = ctk.CTkButton(master=button_frame, text="Generate Shares", command=lambda: generate_shares(textbox, error_label, parent))
+    create_button = mainButton(master=button_frame, text="Generate Shares", command=lambda: generate_shares(textbox, error_label, parent))
     create_button.pack(side="right", anchor="se", padx=50)
 
-    add_button = ctk.CTkButton(master=button_frame, text="Add Group", command=lambda: add_group_popup(table_frame, create_frame))
+    add_button = mainButton(master=button_frame, text="Add Group", command=lambda: add_group_popup(table_frame, create_frame))
     add_button.pack(side="right", anchor="se", padx=50)
 
     group_table(table_frame)
@@ -288,11 +289,15 @@ def group_threshold_popup(parent, error_label):
     button_frame.pack(pady=(10, 0), padx=20, fill='x')
 
     # Cancel button to close the popup without saving
-    cancel_button = ctk.CTkButton(button_frame, text="Cancel", command=popup.destroy)
+    cancel_button = ctk.CTkButton(button_frame, text="Cancel", fg_color=BUTTON_FG, hover_color=SEL_BUTTON_FG,
+        cursor="hand2",
+        text_color="white", command=popup.destroy)
     cancel_button.pack(side='left', expand=True, fill='x', padx=(0, 5))
 
     # Done button to save changes and close the popup
-    done_button = ctk.CTkButton(button_frame, text="Done", command=lambda: close_threshold_popup(popup, parent, error_label))
+    done_button = ctk.CTkButton(button_frame, text="Done", fg_color=BUTTON_FG, hover_color=SEL_BUTTON_FG,
+        cursor="hand2",
+        text_color="white", command=lambda: close_threshold_popup(popup, parent, error_label))
     done_button.pack(side='left', expand=True, fill='x', padx=(5, 0))
     
 def close_threshold_popup(popup, parent, error_label):
