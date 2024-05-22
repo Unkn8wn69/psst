@@ -235,7 +235,7 @@ def create_create_page(parent):
 
     textbox = ctk.CTkTextbox(master=seed_frame, width=500, height=100, corner_radius=15)
     textbox.pack(side="left", padx=(0, 10), anchor="w")
-    #
+    
     def on_text_change(event):
         input_text = textbox.get(1.0, "end-1c").strip()
         last_word = input_text.split()[-1] if input_text.split() else ''
@@ -248,12 +248,10 @@ def create_create_page(parent):
         global buttons
         buttons = []
 
-        # Ensure any existing suggestion popup is destroyed
         for widget in seed_frame.winfo_children():
             if isinstance(widget, ctk.CTkToplevel):
                 widget.destroy()
 
-        # Create a new popup for suggestions
         suggestion_popup = ctk.CTkToplevel(seed_frame)
         suggestion_popup.wm_overrideredirect(True)
         suggestion_popup.wm_geometry(f"+{textbox.winfo_rootx() + 70}+{textbox.winfo_rooty() - 32}")
@@ -262,12 +260,11 @@ def create_create_page(parent):
         suggestion_frame.pack()
 
         for match in matches:
-            # Pass the part of the match that completes the typed word
             completion_text = match[len(typed_word):]
             btn = ctk.CTkButton(suggestion_frame, text=match, height=20, width=80, hover_color=SEL_BUTTON_FG,
                                 command=lambda m=completion_text: do_insert(m + " "))
             btn.pack(side="left", fill='x', padx=5)
-            buttons.append((btn, completion_text))  # Store the button and the completion text
+            buttons.append((btn, completion_text))
 
         current_index = 0
 
@@ -278,12 +275,11 @@ def create_create_page(parent):
             suggestion_popup.destroy()
 
         def update_selection(index):
-                # Highlight the current selection and remove highlight from others
                 for i, (btn, _) in enumerate(buttons):
                     if i == index:
-                        btn.configure(fg_color=SEL_BUTTON_FG)  # Highlight color for the selected button
+                        btn.configure(fg_color=SEL_BUTTON_FG)
                     else:
-                        btn.configure(fg_color=BUTTON_FG)  # Default color for others
+                        btn.configure(fg_color=BUTTON_FG)
 
         def on_key(event):
             nonlocal current_index
@@ -292,8 +288,8 @@ def create_create_page(parent):
                 return "break"
 
         textbox.bind("<Key>", on_key)
-        textbox.focus_set()  # Set focus to capture key events
-        update_selection(0)  # Initialize the first selection
+        textbox.focus_set()
+        update_selection(0)
     
     textbox.bind("<KeyRelease>", on_text_change)
 
@@ -472,7 +468,7 @@ def display_shares(parent, old_popup):
                                 command=lambda: save_shares_to_file())
     save_button.pack(side='right', pady=(10,10), padx=10)
 
-    close_button = mainButton(button_frame, text="Close")
+    close_button = mainButton(button_frame, text="Close", command=lambda: popup.destroy)
     close_button.pack(side="right", pady=(10,10), padx=10)
 
 def center_popup(popup, parent, popup_width, popup_height):
