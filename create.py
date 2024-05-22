@@ -48,8 +48,8 @@ def generate_groups(frame):
         ctk.CTkLabel(master=frame, text=group["name"]).grid(row=row_index, column=0, padx=name_padx)
         ctk.CTkLabel(master=frame, text=str(group["shares"])).grid(row=row_index, column=1, padx=column_padx)
         ctk.CTkLabel(master=frame, text=str(group["threshold"])).grid(row=row_index, column=2, padx=column_padx)
-        
-        delete_button = ctk.CTkButton(master=frame, text="Delete", width=50, height=20, command=lambda index=index: delete_group(index, frame))
+
+        delete_button = ctk.CTkButton(master=frame, text="Delete", width=50, height=20, fg_color="red", hover_color=BUTTON_FG, command=lambda index=index: delete_group(index, frame))
         delete_button.grid(row=row_index, column=4, padx=column_padx)
         
         row_index += 1
@@ -84,7 +84,7 @@ def add_group_popup(table_frame, parent):
     row_index += 1
 
     # Submit Button
-    submit_button = ctk.CTkButton(popup, text="Add Group", command=lambda: submit_group(table_frame, name_entry.get(), shares_entry.get(), threshold_entry.get(), popup, error_label))
+    submit_button = mainButton(master=popup, text="Add Group", command=lambda: submit_group(table_frame, name_entry.get(), shares_entry.get(), threshold_entry.get(), popup, error_label))
     submit_button.grid(row=row_index, column=0, columnspan=2, pady=(20, 0), padx=20)
 
     # Error field
