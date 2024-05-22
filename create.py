@@ -55,8 +55,8 @@ def generate_groups(frame):
         row_index += 1
 
 def add_group_popup(table_frame, parent):
-    popup = ctk.CTkToplevel(parent)
-    popup.geometry("350x200")
+    popup = ctk.CTkToplevel()
+    center_popup(popup, parent, 350, 200)
     popup.minsize(350, 200)
     popup.title("Add Group")
 
@@ -261,7 +261,7 @@ def group_threshold_popup(parent, error_label):
     global groups
 
     popup = ctk.CTkToplevel(parent)
-    popup.geometry("350x200")
+    center_popup(popup, parent, 350, 200)
     popup.minsize(350, 200)
     popup.title("Set group threshold")
 
@@ -329,7 +329,7 @@ def save_shares_to_file():
 
 def create_share_popup(parent):
     popup = ctk.CTkToplevel(parent)
-    popup.geometry("350x150")
+    center_popup(popup, parent, 350, 150)
     popup.minsize(350, 150)
     popup.title("Save shares")
     
@@ -397,5 +397,16 @@ def display_shares(parent, old_popup):
                                 command=lambda: save_shares_to_file())
     save_button.pack(side='right', pady=(10,10), padx=10)
 
-    close_button = mainButton(button_frame, text="Close", command=popup.destroy)
+    close_button = mainButton(button_frame, text="Close")
     close_button.pack(side="right", pady=(10,10), padx=10)
+
+def center_popup(popup, parent, popup_width, popup_height):
+    parent_x = parent.winfo_rootx()
+    parent_y = parent.winfo_rooty()
+    parent_width = parent.winfo_width()
+    parent_height = parent.winfo_height()
+
+    x = parent_x + (parent_width - popup_width) // 2
+    y = parent_y + (parent_height - popup_height) // 2
+
+    popup.geometry(f"{popup_width}x{popup_height}+{x}+{y}")
