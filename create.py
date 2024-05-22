@@ -144,13 +144,10 @@ def validate_input(textbox, error_label):
 
     error_label.configure(text="")
     seed = textbox.get("1.0", "end-1c")
-    print(seed)
     return True
 
 def generate_shares(textbox, error_label):
     global groups
-
-    # apple apple apple apple apple apple apple apple apple apple apple apple apple apple apple apple
 
     if validate_input(textbox, error_label):
         if len(groups) < 1:
@@ -158,7 +155,7 @@ def generate_shares(textbox, error_label):
         elif all(group['needed'] != True for group in groups):
             error_label.configure(text="At least one groups has\nto be needed for restoring the seed.")
         else:
-            generate_shares_command()
+            generate_shares_command(error_label)
 
 def seed_to_hex(seed, json_filepath):
     with open(json_filepath, 'r') as file:
@@ -172,7 +169,7 @@ def seed_to_hex(seed, json_filepath):
     
     return hex_string
 
-def generate_shares_command():
+def generate_shares_command(error_label):
     global seed
     global groups
     
@@ -191,7 +188,7 @@ def generate_shares_command():
 
     command_string =  base_command + command_string + f" --master-secret {hex_seed}"
 
-    print(command_string)
+    # print(command_string)
 
     try:
         result = subprocess.run(command_string, shell=True, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
@@ -212,7 +209,8 @@ def generate_shares_command():
                 "threshold": threshold
             })
 
-        print(group_data)
+        print(group_data[0]["shares"][0])
+        error_label.configure(text="Successfully generated shares", text_color="green")
 
     except subprocess.CalledProcessError as e:
         print(f"Error occurred: {e.stderr}")
