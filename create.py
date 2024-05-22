@@ -357,7 +357,7 @@ def display_shares(parent):
 
     popup = ctk.CTkToplevel(parent)
     popup.geometry("1200x500")
-    popup.minsize(1200, 500)
+    popup.minsize(1200, 550)
     popup.title("Shares")
     popup.focus_force()
     
@@ -378,4 +378,7 @@ def display_shares(parent):
                 share_textbox.insert("1.0", share)
                 share_textbox.pack(side="left", padx=5, expand=True)
                 share_textbox.configure(state="disabled")
+
+    close_button = ctk.CTkButton(scrollable_frame, text="Close", command=popup.destroy)
+    close_button.pack(side="right", pady=(10,10), padx=10)
 
