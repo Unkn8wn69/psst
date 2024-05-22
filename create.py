@@ -340,7 +340,7 @@ def create_share_popup(parent):
 
     # Buttons for actions
     display_button = ctk.CTkButton(button_frame, text="Display Shares",
-                                   command=lambda: display_shares(parent))
+                                   command=lambda: display_shares(parent, old_popup=popup))
     display_button.pack(side='left', expand=True, fill='x', padx=(0, 5))
 
     save_button = ctk.CTkButton(button_frame, text="Save to File",
@@ -352,12 +352,14 @@ def create_share_popup(parent):
 
 # Display shares
 
-def display_shares(parent):
+def display_shares(parent, old_popup):
     global shares
+
+    old_popup.destroy()
 
     popup = ctk.CTkToplevel(parent)
     popup.geometry("1200x500")
-    popup.minsize(1200, 550)
+    popup.minsize(1200, 600)
     popup.title("Shares")
     popup.focus_force()
     
@@ -365,6 +367,9 @@ def display_shares(parent):
 
     scrollable_frame = ctk.CTkScrollableFrame(popup)
     scrollable_frame.pack(side="left", fill="both", expand=True)
+
+    title_label = ctk.CTkLabel(scrollable_frame, text=f"These are your shares to restore your seed. At least {group_threshold} groups are required to restore the seed.", font=("Roboto", 20, "bold"), text_color=SEL_BUTTON_FG)
+    title_label.pack(pady=(10, 5), padx=10, fill='x', anchor='center')
 
     for group in shares:
         group_label = ctk.CTkLabel(scrollable_frame, text=f"{group['name']} - Total Shares: {group['total_shares']}, Needed: {group['threshold']}", font=("Roboto", 16, "bold"))
@@ -379,6 +384,13 @@ def display_shares(parent):
                 share_textbox.pack(side="left", padx=5, expand=True)
                 share_textbox.configure(state="disabled")
 
-    close_button = ctk.CTkButton(scrollable_frame, text="Close", command=popup.destroy)
-    close_button.pack(side="right", pady=(10,10), padx=10)
+    # Frame for buttons
+    button_frame = ctk.CTkFrame(scrollable_frame)
+    button_frame.pack(pady=(10, 0), padx=20, fill='x')
 
+    save_button = ctk.CTkButton(button_frame, text="Save to File",
+                                command=lambda: save_shares_to_file())
+    save_button.pack(side='right', pady=(10,10), padx=10)
+
+    close_button = ctk.CTkButton(button_frame, text="Close", command=popup.destroy)
+    close_button.pack(side="right", pady=(10,10), padx=10)
