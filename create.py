@@ -211,7 +211,7 @@ def generate_shares_command(error_label, parent):
                 "threshold": threshold
             })
 
-        # print(group_data)
+        print(group_data)
 
         shares = group_data
 

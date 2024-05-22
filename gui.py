@@ -8,6 +8,7 @@ import subprocess
 # Local Imports
 from about import create_about_page
 from create import create_create_page
+from recover import *
 from consts import *
 
 tabs = ["Create", "Recover", "About"]
@@ -67,6 +68,8 @@ def update_main_content(tab):
         create_about_page(main_content_frame, switch_tab)
     elif tab == "Create":
         create_create_page(main_content_frame)
+    elif tab == "Recover":
+        create_recover_page(main_content_frame)
 
 # Top bar functions
 
