@@ -4,11 +4,14 @@ import webbrowser
 import re
 import json
 import subprocess
+from tkinter import filedialog, messagebox
 from consts import *
 
 # Constants
 groups = []
 seed = ""
+
+shares = []
 
 def group_table(frame):
     header_padx = (10, 40)
@@ -146,7 +149,7 @@ def validate_input(textbox, error_label):
     seed = textbox.get("1.0", "end-1c")
     return True
 
-def generate_shares(textbox, error_label):
+def generate_shares(textbox, error_label, parent):
     global groups
 
     if validate_input(textbox, error_label):
@@ -155,7 +158,7 @@ def generate_shares(textbox, error_label):
         elif all(group['needed'] != True for group in groups):
             error_label.configure(text="At least one groups has\nto be needed for restoring the seed.")
         else:
-            generate_shares_command(error_label)
+            generate_shares_command(error_label, parent)
 
 def seed_to_hex(seed, json_filepath):
     with open(json_filepath, 'r') as file:
@@ -169,9 +172,10 @@ def seed_to_hex(seed, json_filepath):
     
     return hex_string
 
-def generate_shares_command(error_label):
+def generate_shares_command(error_label, parent):
     global seed
     global groups
+    global shares
     
     base_command = 'cd python-shamir-mnemonic && python3 -m shamir_mnemonic.cli create'
 
@@ -209,8 +213,13 @@ def generate_shares_command(error_label):
                 "threshold": threshold
             })
 
-        print(group_data[0]["shares"][0])
+        print(group_data)
+
+        shares = group_data
+
         error_label.configure(text="Successfully generated shares", text_color="green")
+        
+        create_share_popup(parent)
 
     except subprocess.CalledProcessError as e:
         print(f"Error occurred: {e.stderr}")
@@ -241,7 +250,7 @@ def create_create_page(parent):
     button_frame = ctk.CTkFrame(create_frame, fg_color=create_frame.cget("fg_color"))
     button_frame.pack()
 
-    create_button = ctk.CTkButton(master=button_frame, text="Generate Shares", command=lambda: generate_shares(textbox, error_label))
+    create_button = ctk.CTkButton(master=button_frame, text="Generate Shares", command=lambda: generate_shares(textbox, error_label, parent))
     create_button.pack(side="right", anchor="se", padx=50)
 
     add_button = ctk.CTkButton(master=button_frame, text="Add Group", command=lambda: add_group_popup(table_frame, create_frame))
@@ -252,3 +261,53 @@ def create_create_page(parent):
     generate_groups(table_frame)
 
     return create_frame
+
+
+# Functions for share saving popup
+
+def save_shares_to_file():
+    global shares
+    # Save shares to a file
+    file_path = filedialog.asksaveasfilename(defaultextension=".txt",
+                                             filetypes=[("Text files", "*.txt"), ("All files", "*.*")])
+    if file_path:
+        with open(file_path, 'w') as file:
+            for group in shares:
+
+                file.write(f"Group Name: {group['name']}\n")
+                file.write(f"Total Shares: {group['total_shares']}\n")
+                file.write(f"Threshold: {group['threshold']}\n")
+                file.write("Shares:\n")
+                for share in group['shares']:
+                    file.write(f"    {share}\n")
+                file.write("\n")
+        messagebox.showinfo("Success", "Shares saved successfully!")
+
+def create_share_popup(parent):
+    popup = ctk.CTkToplevel(parent)
+    popup.geometry("350x150")
+    popup.minsize(350, 150)
+    popup.title("Save shares")
+    
+    popup.grab_set()
+    popup.focus_force()
+
+    # Label above the buttons
+    label = ctk.CTkLabel(popup, text="Choose an option")
+    label.pack(pady=(20, 10), padx=20)
+
+    # Frame for buttons
+    button_frame = ctk.CTkFrame(popup)
+    button_frame.pack(pady=10, padx=20, fill='x')
+
+    # Buttons for actions
+    display_button = ctk.CTkButton(button_frame, text="Display Shares",
+                                   command=lambda: display_shares(popup, shares))
+    display_button.pack(side='left', expand=True, fill='x', padx=(0, 5))
+
+    save_button = ctk.CTkButton(button_frame, text="Save to File",
+                                command=lambda: save_shares_to_file())
+    save_button.pack(side='left', expand=True, fill='x', padx=5)
+
+    close_button = ctk.CTkButton(popup, text="Close", command=popup.destroy)
+    close_button.pack(side='right', expand=True)
