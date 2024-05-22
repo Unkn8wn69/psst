@@ -53,7 +53,7 @@ def check_and_clone_dependency(app):
     if not check_directory_exists("python-shamir-mnemonic"):
         show_progress_window(app)
     else:
-        print("Directory already exists.")
+        print("All dependencies already installed.")
 
 # Tab-Content Functions
 
