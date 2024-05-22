@@ -113,6 +113,8 @@ def submit_group(table_frame, name, shares, threshold, popup, error_label):
                 error_label.configure(text="Threshold can't be higher than number of shares!")
             elif int(threshold) >= 16 or int(shares) >= 16:
                 error_label.configure(text="Shares and Threshold can't be over 16!")
+            elif int(threshold) < 2:
+                error_label.configure(text="Threshold must be at least 2")
             else:
                     shares_int = int(shares)
                     threshold_int = int(threshold)
