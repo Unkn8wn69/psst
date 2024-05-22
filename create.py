@@ -328,7 +328,6 @@ def create_share_popup(parent):
     popup.minsize(350, 150)
     popup.title("Save shares")
     
-    popup.grab_set()
     popup.focus_force()
 
     # Label above the buttons
@@ -341,7 +340,7 @@ def create_share_popup(parent):
 
     # Buttons for actions
     display_button = ctk.CTkButton(button_frame, text="Display Shares",
-                                   command=lambda: display_shares(popup, shares))
+                                   command=lambda: display_shares(parent))
     display_button.pack(side='left', expand=True, fill='x', padx=(0, 5))
 
     save_button = ctk.CTkButton(button_frame, text="Save to File",
@@ -350,3 +349,33 @@ def create_share_popup(parent):
 
     close_button = ctk.CTkButton(popup, text="Close", command=popup.destroy)
     close_button.pack(side='right', expand=True)
+
+# Display shares
+
+def display_shares(parent):
+    global shares
+
+    popup = ctk.CTkToplevel(parent)
+    popup.geometry("1200x500")
+    popup.minsize(1200, 500)
+    popup.title("Shares")
+    popup.focus_force()
+    
+    bg_color = parent.cget("fg_color")
+
+    scrollable_frame = ctk.CTkScrollableFrame(popup)
+    scrollable_frame.pack(side="left", fill="both", expand=True)
+
+    for group in shares:
+        group_label = ctk.CTkLabel(scrollable_frame, text=f"{group['name']} - Total Shares: {group['total_shares']}, Needed: {group['threshold']}", font=("Roboto", 16, "bold"))
+        group_label.pack(pady=(10, 5), padx=10, fill='x', anchor='center')
+
+        for i in range(0, len(group['shares']), 5):
+            row_frame = ctk.CTkFrame(scrollable_frame, fg_color=bg_color)
+            row_frame.pack(pady=10, padx=10, fill='x')
+            for share in group['shares'][i:i+5]:
+                share_textbox = ctk.CTkTextbox(row_frame, height=200, state='normal', width=190)
+                share_textbox.insert("1.0", share)
+                share_textbox.pack(side="left", padx=5, expand=True)
+                share_textbox.configure(state="disabled")
+
