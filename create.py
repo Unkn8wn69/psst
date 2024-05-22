@@ -280,7 +280,7 @@ def group_threshold_popup(parent, error_label):
         group_threshold = int(float(value))
         threshold_label.configure(text=f"Current Threshold: {group_threshold}", font=("Roboto", 18))
 
-    slider = ctk.CTkSlider(popup, from_=1, to=len(groups), command=set_group_threshold, number_of_steps=len(groups)-1)
+    slider = ctk.CTkSlider(popup, from_=1, to=len(groups), button_color=SEL_BUTTON_FG, button_hover_color=SEL_BUTTON_FG, command=set_group_threshold, number_of_steps=len(groups)-1)
     slider.set(group_threshold) 
     slider.pack(pady=(0, 5), padx=20, fill='x')
 
@@ -344,15 +344,15 @@ def create_share_popup(parent):
     button_frame.pack(pady=(10, 0), padx=20, fill='x')
 
     # Buttons for actions
-    display_button = ctk.CTkButton(button_frame, text="Display Shares",
+    display_button = mainButton(button_frame, text="Display Shares",
                                    command=lambda: display_shares(parent, old_popup=popup))
     display_button.pack(side='left', expand=True, fill='x', padx=(0, 5))
 
-    save_button = ctk.CTkButton(button_frame, text="Save to File",
+    save_button =  mainButton(button_frame, text="Save to File",
                                 command=lambda: save_shares_to_file())
     save_button.pack(side='left', expand=True, fill='x', padx=5)
 
-    close_button = ctk.CTkButton(popup, text="Close", command=popup.destroy)
+    close_button =  mainButton(popup, text="Close", command=popup.destroy)
     close_button.pack(side='right', expand=True)
 
 # Display shares
@@ -393,9 +393,9 @@ def display_shares(parent, old_popup):
     button_frame = ctk.CTkFrame(scrollable_frame)
     button_frame.pack(pady=(10, 0), padx=20, fill='x')
 
-    save_button = ctk.CTkButton(button_frame, text="Save to File",
+    save_button = mainButton(button_frame, text="Save to File",
                                 command=lambda: save_shares_to_file())
     save_button.pack(side='right', pady=(10,10), padx=10)
 
-    close_button = ctk.CTkButton(button_frame, text="Close", command=popup.destroy)
+    close_button = mainButton(button_frame, text="Close", command=popup.destroy)
     close_button.pack(side="right", pady=(10,10), padx=10)
