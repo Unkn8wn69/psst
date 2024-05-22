@@ -2,6 +2,8 @@ import tkinter as tk
 import customtkinter as ctk
 import webbrowser
 from PIL import Image
+import os
+import subprocess
 
 # Local Imports
 from about import create_about_page
@@ -10,6 +12,48 @@ from consts import *
 
 tabs = ["Create", "Recover", "About"]
 current_tab = "About"
+
+# Dependency functions
+
+def check_directory_exists(directory_path):
+    return os.path.exists(directory_path) and os.path.isdir(directory_path)
+
+def clone_repo(popup):
+    ctk.CTkLabel(popup, text="Installing python-shamir-mnemonic", font=("Roboto", 15), text_color=SEL_BUTTON_FG).pack(pady=0)
+
+    Label = ctk.CTkLabel(popup, text="Loading...")
+    Label.pack(pady=5)
+
+    error_textbox = ctk.CTkTextbox(popup, height=10, state="normal")
+    error_textbox.pack(pady=(5), padx=10, fill="both", expand=True)
+
+    cmd = "git clone https://github.com/trezor/python-shamir-mnemonic"
+    result = subprocess.run(cmd, shell=True, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+    if result.returncode == 0:
+        Label.configure(text="Done")
+        error_textbox.pack_forget() 
+        popup.after(200, popup.destroy)
+    else:
+        Label.configure(text="Error occurred, see details below:")
+
+        error_message = result.stderr.strip() if result.stderr else "Failed to clone repository."
+        error_textbox.insert("1.0", error_message)
+
+def show_progress_window(parent):
+    popup = ctk.CTkToplevel(parent)
+    popup.geometry("550x350")
+    popup.minsize(550, 350)
+    popup.title("Downloading Dependencies")
+    popup.focus()
+    popup.after(100, lambda: clone_repo(popup))
+
+
+def check_and_clone_dependency(app):
+    if not check_directory_exists("python-shamir-mnemonic"):
+        show_progress_window(app)
+    else:
+        print("Directory already exists.")
 
 # Tab-Content Functions
 
@@ -87,6 +131,8 @@ create_top_bar(app)
 
 main_content_frame = ctk.CTkFrame(app)
 main_content_frame.pack(fill="both", expand=True)
+
+check_and_clone_dependency(app)
 
 update_main_content(current_tab)
 
