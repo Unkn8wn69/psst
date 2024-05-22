@@ -15,6 +15,10 @@ group_threshold = 1
 
 shares = []
 
+# suggestions
+
+buttons = []
+
 # TODO: Make group table smaller and add small help / instruction field next to it
 
 def group_table(frame):
@@ -218,6 +222,8 @@ def generate_shares_command(error_label, parent):
 
 
 def create_create_page(parent):
+    wordlist = load_wordlist()
+
     create_frame = ctk.CTkFrame(parent, fg_color=parent.cget("fg_color"))
     create_frame.pack(fill="both", expand=True, padx=20, pady=20)
 
@@ -229,6 +235,67 @@ def create_create_page(parent):
 
     textbox = ctk.CTkTextbox(master=seed_frame, width=500, height=100, corner_radius=15)
     textbox.pack(side="left", padx=(0, 10), anchor="w")
+    #
+    def on_text_change(event):
+        input_text = textbox.get(1.0, "end-1c").strip()
+        last_word = input_text.split()[-1] if input_text.split() else ''
+        matches = [word for word in wordlist if word.startswith(last_word)]
+        if matches:
+            buttons = []
+            show_suggestions(matches[:3], last_word)
+
+    def show_suggestions(matches, typed_word):
+        global buttons
+        buttons = []
+
+        # Ensure any existing suggestion popup is destroyed
+        for widget in seed_frame.winfo_children():
+            if isinstance(widget, ctk.CTkToplevel):
+                widget.destroy()
+
+        # Create a new popup for suggestions
+        suggestion_popup = ctk.CTkToplevel(seed_frame)
+        suggestion_popup.wm_overrideredirect(True)
+        suggestion_popup.wm_geometry(f"+{textbox.winfo_rootx() + 70}+{textbox.winfo_rooty() - 32}")
+
+        suggestion_frame = ctk.CTkFrame(suggestion_popup)
+        suggestion_frame.pack()
+
+        for match in matches:
+            # Pass the part of the match that completes the typed word
+            completion_text = match[len(typed_word):]
+            btn = ctk.CTkButton(suggestion_frame, text=match, height=20, width=80, hover_color=SEL_BUTTON_FG,
+                                command=lambda m=completion_text: do_insert(m + " "))
+            btn.pack(side="left", fill='x', padx=5)
+            buttons.append((btn, completion_text))  # Store the button and the completion text
+
+        current_index = 0
+
+        def do_insert(text):
+            textbox.insert("end", text)
+            textbox.focus_set()
+            textbox.pack()
+            suggestion_popup.destroy()
+
+        def update_selection(index):
+                # Highlight the current selection and remove highlight from others
+                for i, (btn, _) in enumerate(buttons):
+                    if i == index:
+                        btn.configure(fg_color=SEL_BUTTON_FG)  # Highlight color for the selected button
+                    else:
+                        btn.configure(fg_color=BUTTON_FG)  # Default color for others
+
+        def on_key(event):
+            nonlocal current_index
+            if event.keysym == 'Return':
+                do_insert(buttons[current_index][1] + " ")
+                return "break"
+
+        textbox.bind("<Key>", on_key)
+        textbox.focus_set()  # Set focus to capture key events
+        update_selection(0)  # Initialize the first selection
+    
+    textbox.bind("<KeyRelease>", on_text_change)
 
     error_label = ctk.CTkLabel(master=seed_frame, text="", text_color="red")
     error_label.pack(side="right", padx=(10, 50))
@@ -253,6 +320,14 @@ def create_create_page(parent):
     generate_groups(table_frame)
 
     return create_frame
+
+def load_wordlist():
+    try:
+        with open("wordlist.json", "r") as file:
+            return json.load(file)
+    except FileNotFoundError:
+        print("Wordlist file not found.")
+        return []
 
 # Functions for group-threshold popup
 
