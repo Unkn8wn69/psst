@@ -1,5 +1,11 @@
-import tkinter as tk
-import customtkinter as ctk
+try:
+    import tkinter as tk
+    import customtkinter as ctk
+
+except ImportError:
+    print("Required dependencies are missing. Install them with:")
+    print("pip install click customtkinter tkinter")
+    sys.exit(1)
 
 # trezor shamir-mnemonic imports
 import sys
@@ -44,7 +50,7 @@ def create_recover_page(parent):
     progress_frame = ctk.CTkFrame(scrollable_frame)
     progress_label = ctk.CTkLabel(progress_frame, text=progress_text)
 
-    button = mainButton(entry_frame, "Submit", width=30, command=lambda: do_recovery1(textbox.get(1.0, "end-1c"), progress_label, label))
+    button = mainButton(entry_frame, "Submit", width=30, command=lambda: do_recovery1(textbox.get(1.0, "end-1c"), progress_label, label, textbox))
     button.pack(side="right", padx=(5, 0), pady=(70, 0))
 
     progress_frame.pack(fill="both", expand=True, padx=10, pady=10)
@@ -54,7 +60,7 @@ def create_recover_page(parent):
 
     return recover_frame
 
-def do_recovery1(mnemonic, progress_label, label):
+def do_recovery1(mnemonic, progress_label, label, textbox):
     global recovery_state
     global stats_dict
 
@@ -83,6 +89,9 @@ def do_recovery1(mnemonic, progress_label, label):
         label.configure(text=f"{e}", text_color="red")
         return
 
+    textbox.delete("1.0", "end")
+    label.configure(text="Enter a share:")
+
     stats_dict["groups_completed"] = recovery_state.groups_complete()
     stats_dict["group_threshold"] = recovery_state.parameters.group_threshold
     stats_dict["group_count"] = recovery_state.parameters.group_count
@@ -93,6 +102,7 @@ def do_recovery1(mnemonic, progress_label, label):
         for group in stats_dict["groups"]:
             if group["group_name"] == group_name:
                 group["group_size"] = group_size
+                group["group_threshold"] = group_threshold
                 group["shares"].append(str(mnemonic))
                 return
 
@@ -112,14 +122,36 @@ def do_recovery1(mnemonic, progress_label, label):
 
 
     print(stats_dict)
+    update_progress(progress_label, label)
     
 
-def update_progress(progress_label, label, stats_dict):
+def update_progress(progress_label, label):
+    global stats_dict
+
+    groups_text = ""
+
+    FINISHED = "\u2713"
+    EMPTY = "\u2717"
+    INPROGRESS = "\u25cf"
+
+    for i in range(stats_dict["group_count"]):
+
+        group_size = stats_dict["groups"][i]["group_size"]
+        group_name = stats_dict["groups"][i]["group_name"]
+        group_threshold = stats_dict["groups"][i]["group_threshold"]
+
+        prefix = FINISHED if group_size >= group_threshold else INPROGRESS
+
+        if group_threshold > 0:
+            groups_text = groups_text + f"\n {prefix} {str(group_size)} of {str(group_threshold)} shares from group {str(group_name)}"
+        else:
+            groups_text = groups_text + f"\n {EMPTY} 0 shares from group {str(group_name)}"
+
     text = f"""
-You completed {stats_dict["groups_completed"]}
+You completed {stats_dict["groups_completed"]}/{stats_dict["group_threshold"]} groups{groups_text}
 """
 
-    label.configure(text="")
+    progress_label.configure(text=text)
 
 def display_shares(parent):
     shares = [{'name': 'Friends', 'shares': ['scandal veteran acrobat eclipse acne playoff briefing pancake salary syndrome alarm ocean flash manager home total kitchen browser unwrap ajar view item decent bulge together scramble duckling', 'scandal veteran acrobat emerald academic material result playoff glad blimp playoff ounce ceramic knife dictate mixture cluster speak laden crazy lift ceiling peasant branch robin bracelet ceramic', 'scandal veteran acrobat envelope acid august plan leaves marvel drove huge swing steady desert penalty counter emission equation listen avoid recover distance cover check agency regret alto', 'scandal veteran acrobat exact acquire cover artwork main custody vocal satisfy step problem safari wolf fridge carbon license both cause slush genius render center froth have briefing', 'scandal veteran acrobat eyebrow acquire distance plot disease arcade raisin dilemma teacher science pharmacy saver drove ancestor average extend ocean symbolic mansion tadpole moisture isolate industry metric'], 'total_shares': 5, 'threshold': 3}, {'name': 'Family', 'shares': ['scandal veteran beard eclipse acquire alarm raisin exclude adorn mouse guard furl lungs goat mountain lunar watch adapt prospect deal ivory recover type segment blind hazard surprise', 'scandal veteran beard emerald acquire plastic watch become hush moment legend density carpet chemical jerky skunk raspy photo gravity artist timely admit mortgage charity total adorn device', 'scandal veteran beard envelope acid dramatic dish hush aquatic percent resident frozen sniff mountain main building mule multiple exceed frequent total downtown sweater edge dragon critical hairy', 'scandal veteran beard exact acid modify injury crush language petition frost demand enemy spider grin failure step decrease necklace genuine judicial lecture pecan pickup sharp election leaves', 'scandal veteran beard eyebrow acne deadline impact guard ocean depict friar peanut military freshman upgrade mixture rumor fragment grin prize mansion kitchen sweater welfare soul liberty unfold', 'scandal veteran beard fiber acne leaf earth dragon traveler deny repeat smith album camera busy strike medical wine quarter mobile blessing script pecan buyer center true alto', 'scandal veteran beard flip academic blind yoga force mountain adequate leaves peaceful shame pleasure unknown aviation profile similar obtain salt biology yield type kind withdraw salon fortune'], 'total_shares': 7, 'threshold': 3}]
