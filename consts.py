@@ -10,3 +10,13 @@ MONERO_ADDRESS = "89ZYSD9nyFxZS1zrZaB9Z4giuv776AeKTMXVRWPMkZDtau7wF2DCgqc1tH9zAV
 
 SEL_BUTTON_FG = "#F4A261"
 BUTTON_FG = "#5A5A66"
+
+# recovery
+
+recovery_state = None
+stats_dict = {
+    "groups_completed": 0,
+    "group_threshold": 0,
+    "group_count": 0,
+    "groups": []
+    }
