@@ -149,31 +149,34 @@ def update_progress(progress_label, label):
     text = f"""
 You completed {stats_dict["groups_completed"]}/{stats_dict["group_threshold"]} groups{groups_text}
 """
+    if stats_dict["groups_completed"] >= stats_dict["group_threshold"]:
+        text = f"""
+You completed the recovery!{groups_text}
+"""    
 
-    progress_label.configure(text=text)
+    progress_label.configure(text=text, font=("Roboto", 18, "bold"), justify="left")
 
 def display_shares(parent):
     global stats_dict
 
-    # Check if a container for shares display already exists
     if hasattr(parent, 'shares_container'):
-        # Clear existing widgets in the shares container
+
         for widget in parent.shares_container.winfo_children():
             widget.destroy()
     else:
-        # Create a container frame to hold the shares related widgets
+
         parent.shares_container = ctk.CTkFrame(parent)
         parent.shares_container.pack(fill='both', expand=True, padx=10, pady=10)
 
     bg_color = parent.cget("fg_color")
 
-    title_label = ctk.CTkLabel(parent.shares_container, text=f"These are your shares to restore your seed. At least {stats_dict["group_threshold"]} groups are required to restore the seed.", font=("Roboto", 15, "bold"), text_color=SEL_BUTTON_FG)
-    title_label.pack(pady=(10, 5), padx=10, fill='x', anchor='center')
-
     for group in stats_dict["groups"]:
-        print(group)
+        # print(group)
         
-        group_label = ctk.CTkLabel(parent.shares_container, text=f"{group['group_name']} - Shares: {group['group_size']} of {group['group_threshold']} needed", font=("Roboto", 16, "bold"))
+        group_label = ctk.CTkLabel(parent.shares_container, text_color=SEL_BUTTON_FG, text=f"{group['group_name']} - Shares: {group['group_size']} of {group['group_threshold']} needed", font=("Roboto", 18, "bold"))
+        if group["group_threshold"] < 1:
+            group_label = ctk.CTkLabel(parent.shares_container,  text_color=SEL_BUTTON_FG, text=f"{group['group_name']} - No shares yet", font=("Roboto", 18, "bold"))
+
         group_label.pack(pady=(10, 5), padx=10, fill='x', anchor='center')
 
         if group["group_threshold"] > 0:
