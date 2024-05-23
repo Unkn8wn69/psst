@@ -51,15 +51,19 @@ def create_recover_page(parent):
     progress_frame = ctk.CTkFrame(scrollable_frame)
     progress_label = ctk.CTkLabel(progress_frame, text=progress_text, font=("Roboto", 18, "bold"),)
 
-    button = mainButton(entry_frame, "Submit", width=30, command=lambda: do_recovery1(textbox.get(1.0, "end-1c"), progress_label, label, textbox, scrollable_frame))
+    button = mainButton(entry_frame, "Submit", width=30, command=lambda: do_recovery1(textbox.get(1.0, "end-1c"), progress_label, label, textbox, scrollable_frame, show_seed_button))
     button.pack(side="right", padx=(5, 0), pady=(70, 0))
 
-    progress_frame.pack(fill="both", expand=True, padx=10, pady=10)
+    progress_frame.pack(fill="both", expand=True, padx=10, pady=(10,0))
     progress_label.pack()
+
+    show_seed_button = mainButton(scrollable_frame, width=50, text="Show seed", command=lambda: show_seed(parent=parent))
+    show_seed_button.pack()
+    show_seed_button.configure(state="disabled")
 
     return recover_frame
 
-def do_recovery1(mnemonic, progress_label, label, textbox, parent):
+def do_recovery1(mnemonic, progress_label, label, textbox, parent, show_seed_button):
     global recovery_state
     global stats_dict
 
@@ -121,11 +125,11 @@ def do_recovery1(mnemonic, progress_label, label, textbox, parent):
 
 
     print(stats_dict)
-    update_progress(progress_label, label, parent)
+    update_progress(progress_label, label, parent, show_seed_button)
     display_shares(parent)
     
 
-def update_progress(progress_label, label, parent):
+def update_progress(progress_label, label, parent, show_seed_button):
     global stats_dict
 
     groups_text = ""
@@ -155,6 +159,7 @@ You completed {stats_dict["groups_completed"]}/{stats_dict["group_threshold"]} g
 You completed the recovery!{groups_text}
 """    
         display_seed(parent)
+        show_seed_button.configure(state="normal")
 
         
 
@@ -204,20 +209,20 @@ def display_seed(parent):
     popup.focus_force()
 
     label = ctk.CTkLabel(popup, text="Recovery done!\nShow seed?", font=("Roboto", 18, "bold"))
-    label.pack(pady=(100,20))
+    label.pack(pady=(10))
 
     button_frame = ctk.CTkFrame(popup)
-    button_frame.pack(pady=(10, 0), padx=20, fill='x')
+    button_frame.pack(pady=(0, 0), padx=20, fill='x')
 
     cancel_button = ctk.CTkButton(button_frame, text="No", fg_color=BUTTON_FG, hover_color=SEL_BUTTON_FG,
-        cursor="hand2",
+        cursor="hand2", width=(50),
         text_color="white", command=popup.destroy)
-    cancel_button.pack(side='left', expand=True, fill='x', padx=(0, 5))
+    cancel_button.pack(side='left', fill='both', expand=True, padx=5)
 
     done_button = ctk.CTkButton(button_frame, text="Yes", fg_color=BUTTON_FG, hover_color=SEL_BUTTON_FG,
-        cursor="hand2",
+        cursor="hand2", width=(50),
         text_color="white", command=lambda: show_seed(parent, popup))
-    done_button.pack(side='left', expand=True, fill='x', padx=(5, 0))
+    done_button.pack(side='right',  fill='both', expand=True, padx=5)
 
 def show_seed(parent, popup=None):
     global recovery_state
