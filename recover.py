@@ -1,3 +1,4 @@
+import json
 try:
     import tkinter as tk
     import customtkinter as ctk
@@ -16,7 +17,7 @@ from shamir_mnemonic.utils import MnemonicError
 
 # Local project imports
 from consts import *
-from widgets import *
+from utils import *
 from consts import recovery_state
 
 # instruction field | textbox field : small button 
@@ -48,7 +49,7 @@ def create_recover_page(parent):
     progress_text = "Enter your first share so you can start the recovery"
 
     progress_frame = ctk.CTkFrame(scrollable_frame)
-    progress_label = ctk.CTkLabel(progress_frame, text=progress_text)
+    progress_label = ctk.CTkLabel(progress_frame, text=progress_text, font=("Roboto", 18, "bold"),)
 
     button = mainButton(entry_frame, "Submit", width=30, command=lambda: do_recovery1(textbox.get(1.0, "end-1c"), progress_label, label, textbox, scrollable_frame))
     button.pack(side="right", padx=(5, 0), pady=(70, 0))
@@ -74,7 +75,7 @@ def do_recovery1(mnemonic, progress_label, label, textbox, parent):
             label.configure(text="This mnemonic is not part of the current set. Please try again.", text_color="red")
             return
         if share in recovery_state:
-            label.configure(text="Share already entered.")
+            label.configure(text="Share already entered.", text_color="red")
             return
 
         recovery_state.add_share(share)
@@ -120,11 +121,11 @@ def do_recovery1(mnemonic, progress_label, label, textbox, parent):
 
 
     print(stats_dict)
-    update_progress(progress_label, label)
+    update_progress(progress_label, label, parent)
     display_shares(parent)
     
 
-def update_progress(progress_label, label):
+def update_progress(progress_label, label, parent):
     global stats_dict
 
     groups_text = ""
@@ -153,6 +154,9 @@ You completed {stats_dict["groups_completed"]}/{stats_dict["group_threshold"]} g
         text = f"""
 You completed the recovery!{groups_text}
 """    
+        display_seed(parent)
+
+        
 
     progress_label.configure(text=text, font=("Roboto", 18, "bold"), justify="left")
 
@@ -180,11 +184,78 @@ def display_shares(parent):
         group_label.pack(pady=(10, 5), padx=10, fill='x', anchor='center')
 
         if group["group_threshold"] > 0:
-            for i in range(0, len(group["shares"]), 3):
+            for i in range(0, len(group["shares"]), 4):
                 row_frame = ctk.CTkFrame(parent.shares_container, fg_color=bg_color)
                 row_frame.pack(pady=10, padx=10, fill='x')
-                for share in group['shares'][i:i+3]:
+                for share in group['shares'][i:i+4]:
                     share_textbox = ctk.CTkTextbox(row_frame, height=200, state='normal', width=190)
                     share_textbox.insert("1.0", share)
                     share_textbox.pack(side="left", padx=5, expand=True)
                     share_textbox.configure(state="disabled")
+
+
+def display_seed(parent):
+
+    popup = ctk.CTkToplevel(parent)
+    center_popup(popup, parent, 250, 150)
+    popup.minsize(250, 150)
+    popup.title("Recovered seed")
+
+    popup.focus_force()
+
+    label = ctk.CTkLabel(popup, text="Recovery done!\nShow seed?", font=("Roboto", 18, "bold"))
+    label.pack(pady=(100,20))
+
+    button_frame = ctk.CTkFrame(popup)
+    button_frame.pack(pady=(10, 0), padx=20, fill='x')
+
+    cancel_button = ctk.CTkButton(button_frame, text="No", fg_color=BUTTON_FG, hover_color=SEL_BUTTON_FG,
+        cursor="hand2",
+        text_color="white", command=popup.destroy)
+    cancel_button.pack(side='left', expand=True, fill='x', padx=(0, 5))
+
+    done_button = ctk.CTkButton(button_frame, text="Yes", fg_color=BUTTON_FG, hover_color=SEL_BUTTON_FG,
+        cursor="hand2",
+        text_color="white", command=lambda: show_seed(parent, popup))
+    done_button.pack(side='left', expand=True, fill='x', padx=(5, 0))
+
+def show_seed(parent, popup=None):
+    global recovery_state
+
+    if popup != None:
+        popup.destroy()
+
+    popup = ctk.CTkToplevel(parent)
+    center_popup(popup, parent, 250, 150)
+    popup.minsize(250, 150)
+    popup.title("Recovered seed")
+
+    popup.focus_force()
+
+    textbox = ctk.CTkTextbox(master=popup, width=250, height=100, corner_radius=15, text_color=SEL_BUTTON_FG, fg_color=popup.cget("fg_color"))
+    textbox.pack(fill="both", expand=True, padx=5, pady=(5, 0))
+
+    ok_button = ctk.CTkButton(popup, text="Done", fg_color=BUTTON_FG, hover_color=SEL_BUTTON_FG,
+                              cursor="hand2", anchor="center",
+                              text_color="white", width=100, height=30, command=popup.destroy)
+    ok_button.pack(pady=(10, 10))
+
+
+    try:
+        master_secret = recovery_state.recover(b"").hex()
+    except MnemonicError as e:
+        print(str(e))
+    finally:
+        with open('wordlist.json', 'r') as file:
+            polyseed_wordlist = json.load(file)
+        # print(master_secret)
+        
+        seed = hex_to_seed(master_secret, polyseed_wordlist)
+        # print(seed)
+
+        textbox.insert(ctk.END, seed)
+        textbox.configure(state="disabled")
+
+        
+
+

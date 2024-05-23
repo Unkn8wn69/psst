@@ -6,7 +6,7 @@ import json
 import subprocess
 from tkinter import filedialog, messagebox
 from consts import *
-from widgets import *
+from utils import *
 
 # Constants
 groups = []
@@ -472,14 +472,3 @@ def display_shares(parent, old_popup):
 
     close_button = mainButton(button_frame, text="Close", command=lambda: popup.destroy)
     close_button.pack(side="right", pady=(10,10), padx=10)
-
-def center_popup(popup, parent, popup_width, popup_height):
-    parent_x = parent.winfo_rootx()
-    parent_y = parent.winfo_rooty()
-    parent_width = parent.winfo_width()
-    parent_height = parent.winfo_height()
-
-    x = parent_x + (parent_width - popup_width) // 2
-    y = parent_y + (parent_height - popup_height) // 2
-
-    popup.geometry(f"{popup_width}x{popup_height}+{x}+{y}")
