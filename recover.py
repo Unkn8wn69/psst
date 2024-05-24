@@ -2,18 +2,18 @@ import json
 try:
     import tkinter as tk
     import customtkinter as ctk
+    
+    # trezor shamir-mnemonic imports
+    import sys
+    sys.path.append('./python-shamir-mnemonic')
+    from shamir_mnemonic.recovery import RecoveryState
+    from shamir_mnemonic.share import Share
+    from shamir_mnemonic.utils import MnemonicError
 
 except ImportError:
     print("Required dependencies are missing. Install them with:")
     print("pip install click customtkinter tkinter")
     sys.exit(1)
-
-# trezor shamir-mnemonic imports
-import sys
-sys.path.append('./python-shamir-mnemonic')
-from shamir_mnemonic.recovery import RecoveryState
-from shamir_mnemonic.share import Share
-from shamir_mnemonic.utils import MnemonicError
 
 # Local project imports
 from consts import *
