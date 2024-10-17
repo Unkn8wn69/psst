@@ -1,0 +1,5 @@
+Linux:
+pyinstaller --onefile --add-data "assets:assets" --add-data "wordlist.json:." --paths=(pip show customtkinter) --hiddenimport PIL._tkinter_finder --noconsole gui.py
+
+Windows:
+pyinstaller --onefile --add-data "assets:assets" --add-data "wordlist.json:." --paths=(pip show customtkinter) --hiddenimport PIL --hiddenimport PIL._tkinter_finder gui.py
