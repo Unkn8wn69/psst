@@ -1,13 +1,9 @@
-name: Build Binary
+name: Build Linux Binary
 
 on:
   push:
     branches:
       - gui # Set this to the branch you use
-  pull_request:
-    branches:
-      - gui  # Set this to the branch you use
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -19,12 +15,12 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: '3.10'  # Set this to your Python version
+        python-version: '3.x'  # Set this to your Python version
 
     - name: Install dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y python3-tk
+        sudo apt-get install -y python3-tk build-essential
         python -m pip install --upgrade pip
         pip install click customtkinter Pillow pyinstaller
 
@@ -38,5 +34,5 @@ jobs:
     - name: Upload Artifacts
       uses: actions/upload-artifact@v3
       with:
-        name: Linux Binary
+        name: psst-linux
         path: dist/gui
