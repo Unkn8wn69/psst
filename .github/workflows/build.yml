@@ -1,9 +1,6 @@
 name: CI
 
 on:
-  push:
-    branches:
-      - gui # Set this to the branch you use
 jobs:
   build-linux:
     runs-on: ubuntu-latest
@@ -15,7 +12,7 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: '3.x'  # Set this to your Python version
+        python-version: '3.x'
 
     - name: Install dependencies
       run: |
@@ -29,13 +26,16 @@ jobs:
 
     - name: Build binary with PyInstaller
       run: |
-        pyinstaller --onefile --add-data "assets:assets" --add-data "wordlist.json:." --add-data "python-shamir-mnemonic/shamir_mnemonic:shamir_mnemonic" --paths=$(python -c "import customtkinter; print(customtkinter.__path__[0])") --hidden-import PIL._tkinter_finder gui.py
+        pyinstaller --onefile --add-data "assets:assets" --add-data "wordlist.json:." --add-data "python-shamir-mnemonic/shamir_mnemonic:shamir_mnemonic" --paths=$(python -c "import customtkinter; print(customtkinter.__path__[0])") --hidden-import PIL._tkinter_finder --noconsole gui.py
+
+    - name: Rename artifact (Linux)
+      run: mv dist/gui dist/psst
 
     - name: Upload Artifacts
       uses: actions/upload-artifact@v3
       with:
         name: psst-linux
-        path: dist/gui
+        path: dist/psst
   build-windows:
       runs-on: windows-latest
 
@@ -55,10 +55,13 @@ jobs:
 
         - name: Build binary with PyInstaller (Windows)
           run: |
-            pyinstaller --onefile --add-data "assets;assets" --add-data "wordlist.json;." --add-data "python-shamir-mnemonic/shamir_mnemonic;shamir_mnemonic" --paths=$(python -c "import customtkinter; print(customtkinter.__path__[0].replace('\\', '\\\\'))") --hidden-import PIL._tkinter_finder --hiddenimport PIL gui.py
+            pyinstaller --onefile --add-data "assets;assets" --add-data "wordlist.json;." --add-data "python-shamir-mnemonic/shamir_mnemonic;shamir_mnemonic" --paths=$(python -c "import customtkinter; print(customtkinter.__path__[0].replace('\\', '\\\\'))") --hidden-import PIL._tkinter_finder --hiddenimport PIL --noconsole  --icon=assets/icon.ico gui.py
+
+        - name: Rename artifact (Windows)
+          run: move dist/gui.exe dist/psst.exe
 
         - name: Upload Windows Artifacts
           uses: actions/upload-artifact@v3
           with:
             name: psst-windows
-            path: dist/gui.exe
+            path: dist/psst.exe

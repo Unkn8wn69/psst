@@ -1,7 +1,7 @@
 import tkinter as tk
 import customtkinter as ctk
 import webbrowser
-from PIL import Image
+from PIL import Image, ImageTk
 import os
 import subprocess
 import sys
@@ -129,6 +129,8 @@ def create_top_bar(parent):
 app = ctk.CTk()
 app.title(consts.APP_TITLE)
 app.geometry(consts.APP_GEOMETRY)
+
+
 app.minsize(int(consts.APP_GEOMETRY.split("x")[0]), int(consts.APP_GEOMETRY.split("x")[1]))
 ctk.set_appearance_mode("dark")
 
@@ -137,6 +139,11 @@ if getattr(sys, 'frozen', False):
     consts.WORDLIST_PATH = os.path.join(base_path, consts.WORDLIST_PATH)
     consts.MONERO_QR_PATH = os.path.join(base_path, consts.MONERO_QR_PATH)
     consts.GITHUB_LOGO_PATH = os.path.join(base_path, consts.GITHUB_LOGO_PATH)
+    consts.APP_ICON_PATH = os.path.join(base_path, consts.APP_ICON_PATH)
+
+icon = ImageTk.PhotoImage(Image.open(consts.APP_ICON_PATH))
+app.wm_iconbitmap()
+app.iconphoto(True, icon)
 
 create_top_bar(app)
 

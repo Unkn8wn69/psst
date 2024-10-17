@@ -11,16 +11,13 @@ try:
 
 except ImportError:
     print("Required dependencies are missing. Install them with:")
-    print("pip install click customtkinter tkinter")
+    print("pip install click customtkinter")
     sys.exit(1)
 
 # Local project imports
 import consts
 from utils import *
 from consts import recovery_state, stats_dict, BUTTON_FG, SEL_BUTTON_FG
-
-# instruction field | textbox field : small button 
-# groups shown like in display shares
 
 def create_recover_page(parent):
     global stats_dict
