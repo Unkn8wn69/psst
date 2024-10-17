@@ -48,7 +48,7 @@ jobs:
         - name: Install dependencies (Windows)
           run: |
             python -m pip install --upgrade pip
-            pip install click customtkinter tkinter Pillow pyinstaller
+            pip install click customtkinter Pillow pyinstaller
 
         - name: Clone additional repository
           run: git clone https://github.com/trezor/python-shamir-mnemonic python-shamir-mnemonic
