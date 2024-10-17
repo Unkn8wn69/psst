@@ -17,6 +17,7 @@ BUTTON_FG = "#5A5A66"
 
 recovery_state = None
 stats_dict = {
+    "progress": "",
     "groups_completed": 0,
     "group_threshold": 0,
     "group_count": 0,

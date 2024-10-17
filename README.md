@@ -72,4 +72,4 @@ This project is released under the terms of the GPL 3.0 license. For more inform
 
 ## Issues
 
-- Recovery screen when exit and reenter cant enter same seed as before (need clear something when reopen?)
+- Copying XMR address not working correctly

@@ -22,6 +22,7 @@ from consts import recovery_state, stats_dict, BUTTON_FG, SEL_BUTTON_FG
 # groups shown like in display shares
 
 def create_recover_page(parent):
+    global stats_dict
 
     recover_frame = ctk.CTkFrame(parent)
     recover_frame.pack(fill="both", expand=True, padx=20, pady=20)
@@ -58,6 +59,12 @@ def create_recover_page(parent):
     show_seed_button = mainButton(scrollable_frame, width=50, text="Show seed", command=lambda: show_seed(parent=parent))
     show_seed_button.pack()
     show_seed_button.configure(state="disabled")
+
+    if len(stats_dict["groups"]) > 0:
+        display_shares(scrollable_frame)
+
+    if len(stats_dict["progress"]) > 0:
+        progress_label.configure(text=stats_dict["progress"], font=("Roboto", 18, "bold"), justify="left")
 
     return recover_frame
 
@@ -169,6 +176,8 @@ def update_progress(progress_label, label, parent, show_seed_button):
     text = f"""
 You completed {stats_dict["groups_completed"]}/{stats_dict["group_threshold"]} groups{groups_text}
 """
+    stats_dict["progress"] = text
+
     if stats_dict["groups_completed"] >= stats_dict["group_threshold"]:
         text = f"""
 You completed the recovery!{groups_text}
