@@ -1,11 +1,11 @@
-name: Build Linux Binary
+name: CI
 
 on:
   push:
     branches:
       - gui # Set this to the branch you use
 jobs:
-  build:
+  build (linux):
     runs-on: ubuntu-latest
 
     steps:
@@ -36,3 +36,29 @@ jobs:
       with:
         name: psst-linux
         path: dist/gui
+  build-windows:
+      runs-on: windows-latest
+
+      steps:
+        - uses: actions/checkout@v3
+        - uses: actions/setup-python@v4
+          with:
+            python-version: '3.x'
+
+        - name: Install dependencies (Windows)
+          run: |
+            python -m pip install --upgrade pip
+            pip install click customtkinter tkinter Pillow pyinstaller
+
+        - name: Clone additional repository
+          run: git clone https://github.com/trezor/python-shamir-mnemonic python-shamir-mnemonic
+
+        - name: Build binary with PyInstaller (Windows)
+          run: |
+            pyinstaller --onefile --add-data "assets;assets" --add-data "wordlist.json;." --add-data "python-shamir-mnemonic/shamir_mnemonic;shamir_mnemonic" --paths=$(python -c "import customtkinter; print(customtkinter.__path__[0].replace('\\', '\\\\'))") --hidden-import PIL._tkinter_finder --hiddenimport PIL gui.py
+
+        - name: Upload Windows Artifacts
+          uses: actions/upload-artifact@v3
+          with:
+            name: psst-windows
+            path: dist/gui.exe
