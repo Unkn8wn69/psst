@@ -1,8 +1,8 @@
-name: CI
+name: Release 1.0.0
 
 on:
   workflow_dispatch:
-  
+
 jobs:
   build-linux:
     runs-on: ubuntu-latest
