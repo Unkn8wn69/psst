@@ -116,7 +116,7 @@ def create_about_page(parent, switch_tab):
         cursor="hand2",
         text_color="black",
         text=consts.MONERO_ADDRESS,
-        command=lambda: [copy_to_clipboard(about_frame, copied_label),
+        command=lambda: [copy_to_clipboard(about_frame, consts.MONERO_ADDRESS),
                          toggle_button_state(monero_address_button, qr_label, copied_label, qr_code_frame)]
     )
     monero_address_button.pack()

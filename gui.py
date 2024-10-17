@@ -138,8 +138,6 @@ if getattr(sys, 'frozen', False):
     consts.MONERO_QR_PATH = os.path.join(base_path, consts.MONERO_QR_PATH)
     consts.GITHUB_LOGO_PATH = os.path.join(base_path, consts.GITHUB_LOGO_PATH)
 
-print(consts.WORDLIST_PATH)
-
 create_top_bar(app)
 
 main_content_frame = ctk.CTkFrame(app)
