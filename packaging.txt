@@ -1,5 +1,5 @@
 Linux:
-pyinstaller --onefile --add-data "assets:assets" --add-data "wordlist.json:." --paths=(pip show customtkinter) --hiddenimport PIL._tkinter_finder --noconsole gui.py
+pyinstaller --onefile --add-data "assets:assets" --add-data "wordlist.json:." --add-data "python-shamir-mnemonic/shamir_mnemonic:shamir_mnemonic" --paths=/usr/lib/python3.12/site-packages/customtkinter --hiddenimport PIL._tkinter_finder --noconsole gui.py
 
 Windows:
-pyinstaller --onefile --add-data "assets:assets" --add-data "wordlist.json:." --paths=(pip show customtkinter) --hiddenimport PIL --hiddenimport PIL._tkinter_finder gui.py
+pyinstaller --onefile --add-data "assets:assets" --add-data "wordlist.json:." --add-data "python-shamir-mnemonic/shamir_mnemonic:shamir_mnemonic" --paths=/usr/lib/python3.12/site-packages/customtkinter --hiddenimport PIL --hiddenimport PIL._tkinter_finder --noconsole gui.py
