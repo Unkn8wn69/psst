@@ -23,6 +23,8 @@ jobs:
 
     - name: Install dependencies
       run: |
+        sudo apt-get update
+        sudo apt-get install -y python3-tk
         python -m pip install --upgrade pip
         pip install click customtkinter Pillow pyinstaller
 
@@ -36,5 +38,5 @@ jobs:
     - name: Upload Artifacts
       uses: actions/upload-artifact@v3
       with:
-        name: binary
+        name: Linux Binary
         path: dist/gui

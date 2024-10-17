@@ -1,4 +1,5 @@
 import json
+import sys
 try:
     import tkinter as tk
     import customtkinter as ctk
