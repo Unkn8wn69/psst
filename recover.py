@@ -4,8 +4,6 @@ try:
     import customtkinter as ctk
     
     # trezor shamir-mnemonic imports
-    import sys
-    sys.path.append('./python-shamir-mnemonic')
     from shamir_mnemonic.recovery import RecoveryState
     from shamir_mnemonic.share import Share
     from shamir_mnemonic.utils import MnemonicError
@@ -16,9 +14,9 @@ except ImportError:
     sys.exit(1)
 
 # Local project imports
-from consts import *
+import consts
 from utils import *
-from consts import recovery_state
+from consts import recovery_state, stats_dict, BUTTON_FG, SEL_BUTTON_FG
 
 # instruction field | textbox field : small button 
 # groups shown like in display shares
@@ -251,7 +249,7 @@ def show_seed(parent, popup=None):
     except MnemonicError as e:
         print(str(e))
     finally:
-        with open('wordlist.json', 'r') as file:
+        with open(consts.WORDLIST_PATH, 'r') as file:
             polyseed_wordlist = json.load(file)
         # print(master_secret)
         

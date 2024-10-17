@@ -3,12 +3,11 @@ import customtkinter as ctk
 import webbrowser
 import json
 from tkinter import filedialog, messagebox
-from consts import *
+import consts
 from utils import *
+from consts import SEL_BUTTON_FG, BUTTON_FG
 import copy
 try:
-    import sys
-    sys.path.append('./python-shamir-mnemonic')
     from shamir_mnemonic.shamir import generate_mnemonics
 except Exception as error:
     print(error)
@@ -133,7 +132,7 @@ def submit_group(table_frame, name, shares, threshold, popup, error_label):
 def validate_input(textbox, error_label):
     global seed
 
-    with open('wordlist.json', 'r') as file:
+    with open(consts.WORDLIST_PATH, 'r') as file:
         wordlist = json.load(file)
     
     input_words = textbox.get("1.0", "end-1c").strip().split(" ")
@@ -183,7 +182,7 @@ def generate_shares_command(error_label, parent):
     global shares
     global group_threshold
 
-    hex_seed = seed_to_hex(seed, "wordlist.json")
+    hex_seed = seed_to_hex(seed, consts.WORDLIST_PATH)
 
     group_config = tuple((group['threshold'], group['shares']) for group in groups)
 
@@ -305,7 +304,8 @@ def create_create_page(parent):
 
 def load_wordlist():
     try:
-        with open("wordlist.json", "r") as file:
+
+        with open(consts.WORDLIST_PATH, "r") as file:
             return json.load(file)
     except FileNotFoundError:
         print("Wordlist file not found.")

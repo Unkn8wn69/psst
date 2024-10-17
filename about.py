@@ -2,11 +2,11 @@ import tkinter as tk
 import customtkinter as ctk
 from PIL import Image
 import webbrowser
-from consts import *
+import consts
+from consts import SEL_BUTTON_FG, BUTTON_FG
 
 # Constants
 TEXT_COLOR = "white"
-QR_CODE_PATH = "assets/monero-qr.png"
 
 def toggle_button_state(button, label, copied_label, qr_code_frame):
     # Toggle the visual state of the button and the visibility of the label
@@ -115,14 +115,16 @@ def create_about_page(parent, switch_tab):
         fg_color=BUTTON_FG, hover_color=SEL_BUTTON_FG,
         cursor="hand2",
         text_color="black",
-        text=MONERO_ADDRESS,
+        text=consts.MONERO_ADDRESS,
         command=lambda: [copy_to_clipboard(about_frame, copied_label),
                          toggle_button_state(monero_address_button, qr_label, copied_label, qr_code_frame)]
     )
     monero_address_button.pack()
 
     # Load QR Code Image
-    qr_image = ctk.CTkImage(dark_image=Image.open(QR_CODE_PATH), size=(115,115))
+
+
+    qr_image = ctk.CTkImage(dark_image=Image.open(consts.MONERO_QR_PATH), size=(115,115))
     qr_label = ctk.CTkLabel(qr_code_frame, text="", image=qr_image)
     
 

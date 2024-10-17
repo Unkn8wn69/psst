@@ -4,12 +4,14 @@ import webbrowser
 from PIL import Image
 import os
 import subprocess
+import sys
 
 # Local Imports
 from about import create_about_page
 from create import create_create_page
 from recover import *
-from consts import *
+import consts
+from consts import SEL_BUTTON_FG, BUTTON_FG
 
 tabs = ["Create", "Recover", "About"]
 current_tab = "About"
@@ -111,13 +113,13 @@ def create_top_bar(parent):
 
     tab_buttons(top_bar)
 
-    github_icon = ctk.CTkImage(dark_image=Image.open(GITHUB_LOGO_PATH), size=(45,45))
+    github_icon = ctk.CTkImage(dark_image=Image.open(consts.GITHUB_LOGO_PATH), size=(45,45))
     github_icon_label = ctk.CTkLabel(top_bar, text="", image=github_icon, cursor="hand2")
 
     github_icon_label.pack(side="right", padx=10, pady=5)
     github_icon_label.bind("<Button-1>", lambda event: open_github())
 
-    version_label = ctk.CTkLabel(top_bar, text=f"v{APP_VERSION}", anchor="e")
+    version_label = ctk.CTkLabel(top_bar, text=f"v{consts.APP_VERSION}", anchor="e")
     version_label.pack(side="right")
 
     github_icon_label.image = github_icon
@@ -125,17 +127,25 @@ def create_top_bar(parent):
 # Start of the application
 
 app = ctk.CTk()
-app.title(APP_TITLE)
-app.geometry(APP_GEOMETRY)
-app.minsize(int(APP_GEOMETRY.split("x")[0]), int(APP_GEOMETRY.split("x")[1]))
+app.title(consts.APP_TITLE)
+app.geometry(consts.APP_GEOMETRY)
+app.minsize(int(consts.APP_GEOMETRY.split("x")[0]), int(consts.APP_GEOMETRY.split("x")[1]))
 ctk.set_appearance_mode("dark")
+
+if getattr(sys, 'frozen', False):
+    base_path = sys._MEIPASS
+    consts.WORDLIST_PATH = os.path.join(base_path, consts.WORDLIST_PATH)
+    consts.MONERO_QR_PATH = os.path.join(base_path, consts.MONERO_QR_PATH)
+    consts.GITHUB_LOGO_PATH = os.path.join(base_path, consts.GITHUB_LOGO_PATH)
+
+print(consts.WORDLIST_PATH)
 
 create_top_bar(app)
 
 main_content_frame = ctk.CTkFrame(app)
 main_content_frame.pack(fill="both", expand=True)
 
-check_and_clone_dependency(app)
+#check_and_clone_dependency(app)
 
 update_main_content(current_tab)
 
