@@ -69,3 +69,8 @@ If you find this project useful, please consider donating to the following Moner
 ## License
 
 This project is released under the terms of the GPL 3.0 license. For more information, see the [LICENSE](LICENSE) file included in the repository.
+
+## Issues
+
+- Recovery screen duplicates
+- Recovery screen when exit and reenter cant enter same seed as before (need clear something when reopen?)
