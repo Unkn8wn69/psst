@@ -97,32 +97,53 @@ def do_recovery1(mnemonic, progress_label, label, textbox, parent, show_seed_but
     stats_dict["group_threshold"] = recovery_state.parameters.group_threshold
     stats_dict["group_count"] = recovery_state.parameters.group_count
 
-    def update_or_add_group(group_name, group_size, group_threshold, mnemonic):
+    def update_or_add_group(group_name, group_size, group_threshold, mnemonic=None):
         global stats_dict
 
-        for group in stats_dict["groups"]:
-            if group["group_name"] == group_name:
-                group["group_size"] = group_size
-                group["group_threshold"] = group_threshold
-                group["shares"].append(str(mnemonic))
-                return
+        print(f"Name: {group_name}\nSize: {group_size}\nThreshold: {group_threshold}\nMnemonic: {mnemonic}")
+        
+        is_new_group = not any(group['group_name'] == group_name for group in stats_dict['groups'])
 
-        stats_dict["groups"].append({
-            "group_name": group_name,
-            "group_size": group_size,
-            "group_threshold": group_threshold,
-            "shares": [str(mnemonic)]
-        })
+        if mnemonic and is_new_group:
+            new_group = {
+                "group_name": group_name,
+                "group_size": group_size,
+                "group_threshold": group_threshold,
+                "shares": [str(mnemonic)]
+            }
+            stats_dict["groups"].append(new_group)
+        
+        if mnemonic and not is_new_group:
+            for group in stats_dict["groups"]:
+                if group["group_name"] == group_name:
+                    group["group_size"] = group_size
+                    group["group_threshold"] = group_threshold
+                    group["shares"].append(str(mnemonic))
+
+        if not mnemonic and is_new_group:
+            new_group = {
+                "group_name": group_name,
+                "group_size": group_size,
+                "group_threshold": group_threshold,
+                "shares": []
+            }
+            stats_dict["groups"].append(new_group)
+
 
     for i in range(stats_dict["group_count"]):
         group_size, group_threshold = recovery_state.group_status(i)
         group_name = recovery_state.group_prefix(i)
 
-        
-        update_or_add_group(group_name, group_size, group_threshold, mnemonic)
+        if i != share.group_index:
+            update_or_add_group(group_name, group_size, group_threshold)
+        else:
+            update_or_add_group(group_name, group_size, group_threshold, mnemonic)
+
+        print("-----------------------------------------------------------------------------")
+        print(stats_dict)
 
 
-    print(stats_dict)
+    #print(stats_dict)
     update_progress(progress_label, label, parent, show_seed_button)
     display_shares(parent)
     
