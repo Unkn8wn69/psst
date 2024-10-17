@@ -454,5 +454,5 @@ def display_shares(parent, old_popup):
                                 command=lambda: save_shares_to_file())
     save_button.pack(side='right', pady=(10,10), padx=10)
 
-    close_button = mainButton(button_frame, text="Close", command=lambda: popup.destroy)
+    close_button = mainButton(button_frame, text="Close", command=popup.destroy)
     close_button.pack(side="right", pady=(10,10), padx=10)
