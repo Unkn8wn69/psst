@@ -68,8 +68,6 @@ def do_recovery1(mnemonic, progress_label, label, textbox, parent, show_seed_but
     if recovery_state == None:
         recovery_state = RecoveryState()
 
-    # print("mnemonic: " + mnemonic)
-
     try:
         share = Share.from_mnemonic(str(mnemonic))
 
@@ -100,7 +98,7 @@ def do_recovery1(mnemonic, progress_label, label, textbox, parent, show_seed_but
     def update_or_add_group(group_name, group_size, group_threshold, mnemonic=None):
         global stats_dict
 
-        print(f"Name: {group_name}\nSize: {group_size}\nThreshold: {group_threshold}\nMnemonic: {mnemonic}")
+        #print(f"Name: {group_name}\nSize: {group_size}\nThreshold: {group_threshold}\nMnemonic: {mnemonic}")
         
         is_new_group = not any(group['group_name'] == group_name for group in stats_dict['groups'])
 
@@ -139,11 +137,9 @@ def do_recovery1(mnemonic, progress_label, label, textbox, parent, show_seed_but
         else:
             update_or_add_group(group_name, group_size, group_threshold, mnemonic)
 
-        print("-----------------------------------------------------------------------------")
-        print(stats_dict)
+#        print("-----------------------------------------------------------------------------")
+#        print(stats_dict)
 
-
-    #print(stats_dict)
     update_progress(progress_label, label, parent, show_seed_button)
     display_shares(parent)
     
