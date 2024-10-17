@@ -5,7 +5,7 @@ on:
     branches:
       - gui # Set this to the branch you use
 jobs:
-  build (linux):
+  build-linux:
     runs-on: ubuntu-latest
 
     steps:
