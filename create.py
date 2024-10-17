@@ -1,12 +1,17 @@
 import tkinter as tk
 import customtkinter as ctk
 import webbrowser
-import re
 import json
-import subprocess
 from tkinter import filedialog, messagebox
 from consts import *
 from utils import *
+import copy
+try:
+    import sys
+    sys.path.append('./python-shamir-mnemonic')
+    from shamir_mnemonic.shamir import generate_mnemonics
+except Exception as error:
+    print(error)
 
 # Constants
 groups = []
@@ -177,50 +182,29 @@ def generate_shares_command(error_label, parent):
     global groups
     global shares
     global group_threshold
-    
-    base_command = 'cd python-shamir-mnemonic && python3 -m shamir_mnemonic.cli create'
 
     hex_seed = seed_to_hex(seed, "wordlist.json")
-    group_parts = []
 
-    for group in groups:
-        group_parts.append(f"--group {group['threshold']} {group['shares']}")
+    group_config = tuple((group['threshold'], group['shares']) for group in groups)
+
+    mnemonics = generate_mnemonics(group_threshold, group_config, bytes.fromhex(hex_seed), b'', True, 0)
+
+    groups_data = copy.deepcopy(groups)
+
+    for i, group in enumerate(groups_data):
+        group.update({
+            'shares': mnemonics[i],
+            'total_shares': len(mnemonics[i])
+        })
+
+ 
+    print(groups_data)
+
+    shares = groups_data
+
+    error_label.configure(text="Successfully generated shares", text_color="green")
     
-    command_string = f" custom --group-threshold {group_threshold} " + " ".join(group_parts)
-
-    command_string =  base_command + command_string + f" --master-secret {hex_seed}"
-
-    # print(command_string)
-
-    try:
-        result = subprocess.run(command_string, shell=True, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-
-        groups_output = re.split(r'Group \d+ of \d+ - \d+ of \d+ shares required:\n', result.stdout.strip())
-        group_info_output = re.findall(r'Group (\d+) of \d+ - (\d+) of (\d+) shares required:', result.stdout)
-        group_data = []
-        for info, group in zip(group_info_output, groups_output[1:]):
-            group_name = groups[int(info[0])-1]['name']
-            threshold = int(info[1])
-            total_shares = int(info[2])
-            shares = [share.strip() for share in group.strip().split('\n')]
-
-            group_data.append({
-                "name": group_name,
-                "shares": shares,
-                "total_shares": total_shares,
-                "threshold": threshold
-            })
-
-        print(group_data)
-
-        shares = group_data
-
-        error_label.configure(text="Successfully generated shares", text_color="green")
-        
-        create_share_popup(parent)
-
-    except subprocess.CalledProcessError as e:
-        print(f"Error occurred: {e.stderr}")
+    create_share_popup(parent)
 
 
 def create_create_page(parent):
