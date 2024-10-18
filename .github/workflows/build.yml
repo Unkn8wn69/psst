@@ -2,8 +2,8 @@ name: CI
 
 on:
   workflow_dispatch:
-    inputs:
-      run_name: 'Pre-Release 0.0.9'
+
+run-name: "Pre-Release 0.0.9"
 
 jobs:
   build-linux:
