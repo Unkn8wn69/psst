@@ -1,6 +1,6 @@
 # Constants
 APP_TITLE = "PSST"
-APP_VERSION = "1.0.0"
+APP_VERSION = "0.0.9 Pre"
 APP_GEOMETRY = "900x550"
 GITHUB_LOGO_PATH = "assets/github.png"
 MONERO_QR_PATH = "assets/monero-qr.png"
