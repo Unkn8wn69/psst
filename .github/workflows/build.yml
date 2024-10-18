@@ -3,10 +3,10 @@ name: CI
 on:
   workflow_dispatch:
       inputs:
-      run_name:
-        description: 'Pre-Release 0.0.9'
-        required: true
-        default: 'Release'
+        run_name:
+          description: 'Pre-Release 0.0.9'
+          required: true
+          default: 'Release'
 
 jobs:
   build-linux:
