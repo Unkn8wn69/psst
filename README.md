@@ -30,20 +30,18 @@ This project is in an early stage, and contributions are welcome.
 
 1. Download the [latest release](https://github.com/Unkn8wn69/psst/releases) from the repo
 2. Start the executable
-
 3. (Linux only) Adjust execution permissions of the file
-   
+
    `chmod +x psst`
 
-## Build from source
+## Building from source
 
 0. Clone this repo and move into the directory
-   
+
    ```
    git clone https://github.com/Unkn8wn69/psst
    cd psst
    ```
-
 1. Install dependencies
 
    `pip install click customtkinter pillow`
@@ -51,14 +49,15 @@ This project is in an early stage, and contributions are welcome.
    For externally managed environment on Arch:
 
    `sudo pacman -S python-click python-customtkinter python-pillow`
-
 2. Install python-shamir-mnemonic
 
    `git clone https://github.com/trezor/python-shamir-mnemonic`
-
 3. Start the tool
 
    `python gui.py`
+4. (Optional) Compile using [PyInstaller](https://pyinstaller.org/)
+
+   `pyinstaller --onefile --add-data "assets:assets" --add-data "wordlist.json:." --add-data "python-shamir-mnemonic/shamir_mnemonic:shamir_mnemonic" --paths=$(python -c "import customtkinter; print(customtkinter.__path__[0])") --hiddenimport PIL --hidden-import PIL._tkinter_finder --icon=assets/icon.ico --noconsole gui.py`
 
 ## Prerequisites for building from source
 
